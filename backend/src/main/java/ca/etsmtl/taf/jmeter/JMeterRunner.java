@@ -14,39 +14,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public  class JMeterRunner {
+public class JMeterRunner {
 
   private static final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
 
+  public static String runJMeter(String testType) throws URISyntaxException {
 
-
-  private static Properties loadProperties() {
-    try (InputStream input = JMeterRunner.class.getClassLoader().getResourceAsStream("application.properties")) {
-      Properties properties = new Properties();
-      properties.load(input);
-      return properties;
-    } catch (IOException e) {
-      logger.error("Error loading properties.", e);
-      return null;
-    }
-  }
-
-  public static String runJMeter( String testType) throws URISyntaxException {
-    String jmxFilePath="";
-    if (testType.equals("http"))
-      jmxFilePath=  "backend/src/main/resources/jmeter/TestPlan.jmx";
-    else if (testType.equals("ftp"))
-      jmxFilePath=  "backend/src/main/resources/jmeter/FTPTestPlan.jmx";
+    String jmxFilePath = ApplicationStartupListenerBean.JMETER_TEMP_FOLDER + "TestPlan.jmx";
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     String timestamp = dateFormat.format(new Date());
 
-    String resultsFilePath = "backend/src/main/resources/jmeter/results/result_"+timestamp +".csv";
-    String osName = System.getProperty("os.name");
+    String resultsFilePath = new StringBuilder().append(ApplicationStartupListenerBean.JMETER_TEMP_FOLDER)
+        .append("results")
+        .append(System.getProperty("file.separator")).append(timestamp).append(".csv").toString();
 
-    String jmeterExecutable= new JmeterPathProvider().getJmeterJarPath();
+    String jmeterExecutable = new JmeterPathProvider().getJmeterJarPath();
     try {
-      String jmeterCommand = jmeterExecutable + " -n -t " + jmxFilePath + " -l " + resultsFilePath /*+" -e -o " + htmlReportPath */;
+      String jmeterCommand = jmeterExecutable + " -n -t " + jmxFilePath + " -l " + resultsFilePath;
       // Run the command
       Runtime runtime = Runtime.getRuntime();
       Process process = runtime.exec(jmeterCommand);
@@ -61,33 +46,33 @@ public  class JMeterRunner {
 
     } catch (IOException e) {
       return null;
-    } catch (InterruptedException e){
+    } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       return null;
     }
   }
 
-
-  public static List<Map<String, String>> convertCSVtoJSON(String csvFilePath) throws IOException, CsvException, CsvException {
+  public static List<Map<String, String>> convertCSVtoJSON(String csvFilePath)
+      throws IOException, CsvException, CsvException {
     try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
       List<String[]> csvData = reader.readAll();
 
       String[] headers = csvData.get(0);
 
       return csvData.stream()
-              .skip(1) // Skip the header row
-              .map(row -> {
-                Map<String, String> jsonMap = createJsonMap(headers, row);
-                return jsonMap;
-              })
-              .collect(Collectors.toList());
+          .skip(1) // Skip the header row
+          .map(row -> {
+            Map<String, String> jsonMap = createJsonMap(headers, row);
+            return jsonMap;
+          })
+          .collect(Collectors.toList());
     }
   }
 
   private static Map<String, String> createJsonMap(String[] headers, String[] values) {
     return IntStream.range(0, headers.length)
-            .boxed()
-            .collect(Collectors.toMap(i -> headers[i], i -> values[i]));
+        .boxed()
+        .collect(Collectors.toMap(i -> headers[i], i -> values[i]));
   }
 
 }
