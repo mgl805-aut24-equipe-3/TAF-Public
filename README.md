@@ -26,14 +26,23 @@ docker compose --env-file .docker_config.env up
 
 Il est aussi possible de lancer les applications côté serveur et côté client séparément. Cela n'est cependant pas recommandé, car cela est plus complexe, et le deviendra de plus en plus à mesure que de nouveaux services seront ajouté.
 
-**Backend :**
-- Installez maven sur votre système avec `mvn clean install`.
-- Configurez l'application Springboot dans votre ide (Eclipse, IntelliJ). Des outils sont disponibles dans ces IDEs pour lancer l'application.
+#### Backend
 
-**Frontend :**
+**Prérequis**
+1. Installer Jmeter
+   Faire un download du ZIP ou TGZ et l'extraire dans n'importe quel dossier
+2. Installer Maven
+
+**Pour tester localement**
+1. Ouvrir le fichier `.env` sous la racine du projet et changer la valeur de la variable `JMETER_INSTALL_DIR` pour le chemin où jmeter a été installé. Par exemple: `JMETER_INSTALL_DIR=/Users/jean-francoisl/Downloads/apache-jmeter-5.6.3`
+
+2. Lancer l'application SpringBoot en utilisant la vue Web VSCode `Sprint Boot Dashboard`
+La variable d'environnement devrait être loader.
+
+#### Frontend
 - Installez des dépendances avec `npm install`.
 - Lancez l'application avec la ligne de commande
-`ng serve --o`.
+`npm start`.
 
 **Autres services :**  
 Pour les autres services, vous pouvez vous référer au Wiki ou contacter les équipes directement.

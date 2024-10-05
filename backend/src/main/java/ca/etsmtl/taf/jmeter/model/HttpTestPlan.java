@@ -1,14 +1,17 @@
 package ca.etsmtl.taf.jmeter.model;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import ca.etsmtl.taf.jmeter.ApplicationStartupListenerBean;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class HttpTestPlan  extends  TestPlanBase{
+public class HttpTestPlan extends TestPlanBase {
 
   private String protocol;
   private String path;
@@ -36,8 +39,6 @@ public class HttpTestPlan  extends  TestPlanBase{
     super();
 
   }
-
-
 
   public String getNbThreads() {
     return nbThreads;
@@ -108,7 +109,6 @@ public class HttpTestPlan  extends  TestPlanBase{
     return method;
   }
 
-
   public void setMethod(String method) {
     this.method = method;
   }
@@ -125,9 +125,9 @@ public class HttpTestPlan  extends  TestPlanBase{
   private void replaceAndSaveVariables() {
     try {
       // Read the XML content from the file
-      String filePath = "backend/src/main/resources/jmeter/HttpSamplerTemplate.jmx";
+      String filePath = ApplicationStartupListenerBean.JMETER_TEMP_FOLDER + "HttpSamplerTemplate.jmx";
       String xmlContent = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
-      String target = "backend/src/main/resources/jmeter/TestPlan.jmx";
+      String target = ApplicationStartupListenerBean.JMETER_TEMP_FOLDER + "TestPlan.jmx";
 
       // Replace variables with Java variables (using default values if not found)
       xmlContent = replaceVariables(xmlContent);
@@ -143,16 +143,16 @@ public class HttpTestPlan  extends  TestPlanBase{
   private String replaceVariables(String xmlContent) throws JsonProcessingException {
     // Replace variables in the XML content using instance fields
     xmlContent = xmlContent.replace("$NB_THREADS$", nbThreads)
-            .replace("$RAMP_TIME$", rampTime)
-            .replace("$DURATION$", duration)
-            .replace("$DOMAIN$", domain)
-            .replace("$PORT$", port)
-            .replace("$PROTOCOL$", protocol)
-            .replace("$PATH$", path)
-            .replace("$METHOD$", method)
-            .replace("$LOOP_COUNTER$", loop);
+        .replace("$RAMP_TIME$", rampTime)
+        .replace("$DURATION$", duration)
+        .replace("$DOMAIN$", domain)
+        .replace("$PORT$", port)
+        .replace("$PROTOCOL$", protocol)
+        .replace("$PATH$", path)
+        .replace("$METHOD$", method)
+        .replace("$LOOP_COUNTER$", loop);
     ;
-    if (!data.equals(null) && !data.equals("")){
+    if (!data.equals(null) && !data.equals("")) {
       ObjectMapper objectMapper = new ObjectMapper();
       objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
       Object jsonMap = objectMapper.readValue(data, Object.class);
@@ -160,16 +160,15 @@ public class HttpTestPlan  extends  TestPlanBase{
       // Serialize the Map to a formatted JSON string
       String formattedJsonString = objectMapper.writeValueAsString(jsonMap);
       String xmlString = " <elementProp name=\"\" elementType=\"HTTPArgument\">\n" +
-              "                <boolProp name=\"HTTPArgument.always_encode\">false</boolProp>\n" +
-              "                <stringProp name=\"Argument.value\"><stringProp name=\"Argument.value\">" + formattedJsonString + "</stringProp></stringProp>\n" +
-              "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
-              "              </elementProp>";
+          "                <boolProp name=\"HTTPArgument.always_encode\">false</boolProp>\n" +
+          "                <stringProp name=\"Argument.value\"><stringProp name=\"Argument.value\">"
+          + formattedJsonString + "</stringProp></stringProp>\n" +
+          "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+          "              </elementProp>";
 
-
-
-      xmlContent=xmlContent.replace("$DATA$",xmlString);
-    } else{
-      xmlContent=xmlContent.replace("$DATA$","");
+      xmlContent = xmlContent.replace("$DATA$", xmlString);
+    } else {
+      xmlContent = xmlContent.replace("$DATA$", "");
 
     }
     return xmlContent;
@@ -178,18 +177,15 @@ public class HttpTestPlan  extends  TestPlanBase{
   @Override
   public String toString() {
     return "JmeterTestPlan{" +
-            "nbThreads='" + nbThreads + '\'' +
-            ", rampTime='" + rampTime + '\'' +
-            ", duration='" + duration + '\'' +
-            ", domain='" + domain + '\'' +
-            ", port='" + port + '\'' +
-            ", protocol='" + protocol + '\'' +
-            ", path='" + path + '\'' +
-            ", method='" + method + '\'' +
-            '}';
+        "nbThreads='" + nbThreads + '\'' +
+        ", rampTime='" + rampTime + '\'' +
+        ", duration='" + duration + '\'' +
+        ", domain='" + domain + '\'' +
+        ", port='" + port + '\'' +
+        ", protocol='" + protocol + '\'' +
+        ", path='" + path + '\'' +
+        ", method='" + method + '\'' +
+        '}';
   }
 
-
 }
-
-
