@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +58,7 @@ public class GatlingApiController {
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
-                return new ResponseEntity<>(new MessageResponse(output.toString()),
+                return new ResponseEntity<>(new MessageResponse(parseOutput(output.toString())),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(new MessageResponse(output.toString()),
@@ -70,5 +72,36 @@ public class GatlingApiController {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    private String parseOutput(String output) {
+        String returnString = "---- Global Information --------------------------------------------------------\n";
+
+        String startPattern = "---- Global Information --------------------------------------------------------";
+        String endPattern = "---- Response Time Distribution ------------------------------------------------";
+        Pattern pattern = Pattern.compile(startPattern + "(.*?)" + endPattern, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(output);
+        if (matcher.find()) {
+            returnString += matcher.group(1).trim() + "\n";
+        } else {
+            returnString += "Not found in Gatling output.";
+        }
+
+        returnString += "---- Generated Report ------------------------------------------------------\n";
+
+        String regex = "Please open the following file: (file:///[^\s]+|https?://[^\s]+)";
+
+        pattern = Pattern.compile(regex, Pattern.MULTILINE);
+        matcher = pattern.matcher(output);
+
+        if (matcher.find()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                returnString += matcher.group(i).trim();
+            }
+        } else {
+            returnString += "Not found in Gatling output.";
+        }
+
+        return returnString;
     }
 }
