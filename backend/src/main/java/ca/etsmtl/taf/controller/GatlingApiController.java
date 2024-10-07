@@ -23,6 +23,9 @@ import ca.etsmtl.taf.provider.GatlingJarPathProvider;
 @RestController
 @RequestMapping("/api/gatling")
 public class GatlingApiController {
+
+    static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
     /**
      * @param gatlingRequest
      * @return
@@ -31,13 +34,23 @@ public class GatlingApiController {
     public ResponseEntity<MessageResponse> runSimulation(@RequestBody GatlingRequest gatlingRequest) {
         try {
             String gatlingJarPath = new GatlingJarPathProvider().getGatlingJarPath();
-            String testRequest = "{\"baseUrl\":\"" + gatlingRequest.getTestBaseUrl()
-                    + "\",\"scenarioName\":\"" + gatlingRequest.getTestScenarioName()
-                    + "\",\"requestName\":\"" + gatlingRequest.getTestRequestName() + "\",\"uri\":\""
-                    + gatlingRequest.getTestUri() + "\",\"requestBody\":\""
-                    + gatlingRequest.getTestRequestBody() + "\",\"methodType\":\""
-                    + gatlingRequest.getTestMethodType() + "\",\"usersNumber\":\""
-                    + gatlingRequest.getTestUsersNumber() + "\"}";
+            String testRequest = isWindows
+                    ? "{\\\"baseUrl\\\":\\\"" + gatlingRequest.getTestBaseUrl() + "\\\",\\\"scenarioName\\\":\\\""
+                            + gatlingRequest.getTestScenarioName() + "\\\",\\\"requestName\\\":\\\""
+                            + gatlingRequest.getTestRequestName() + "\\\",\\\"uri\\\":\\\""
+                            + gatlingRequest.getTestUri() + "\\\",\\\"requestBody\\\":\\\""
+                            + gatlingRequest.getTestRequestBody() + "\\\",\\\"methodType\\\":\\\""
+                            + gatlingRequest.getTestMethodType() + "\\\",\\\"usersNumber\\\":\\\""
+                            + gatlingRequest.getTestUsersNumber() + "\\\"}"
+                    :
+
+                    "{\"baseUrl\":\"" + gatlingRequest.getTestBaseUrl()
+                            + "\",\"scenarioName\":\"" + gatlingRequest.getTestScenarioName()
+                            + "\",\"requestName\":\"" + gatlingRequest.getTestRequestName() + "\",\"uri\":\""
+                            + gatlingRequest.getTestUri() + "\",\"requestBody\":\""
+                            + gatlingRequest.getTestRequestBody() + "\",\"methodType\":\""
+                            + gatlingRequest.getTestMethodType() + "\",\"usersNumber\":\""
+                            + gatlingRequest.getTestUsersNumber() + "\"}";
 
             StringBuilder gatlingCommand = new StringBuilder();
             gatlingCommand.append("java -jar ");
