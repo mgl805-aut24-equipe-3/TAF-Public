@@ -41,9 +41,6 @@ bin/
 ### Log files
 *.log
 
-### Test results
-results/
-
 # local config
 application-local.yml
 node_modules

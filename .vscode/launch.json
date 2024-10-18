@@ -11,21 +11,11 @@
             "envFile": "${workspaceFolder}/.env"
         },
         {
-            "type": "java",
-            "name": "Gatling",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "ca.etsmtl.Main",
-            "projectName": "gatling",
-            "args": "-DrequestJson='{\"baseUrl\":\"https://httpbin.org\",\"scenarioName\":\"Onboarding\",\"requestName\":\"\",\"uri\":\"/get\",\"requestBody\":\"\",\"methodType\":\"GET\",\"usersNumber\":\"10\"}'",
-            // "args": "-DrequestJson='"{\"baseUrl\":\"https://httpbin.org\",\"scenarioName\":\"Onboarding\",\"requestName\":\"\",\"uri\":\"/get\",\"requestBody\":\"\",\"methodType\":\"GET\",\"usersNumber\":\"5\"}'"
-        },
-        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
-        }
+          }
     ]
 }
