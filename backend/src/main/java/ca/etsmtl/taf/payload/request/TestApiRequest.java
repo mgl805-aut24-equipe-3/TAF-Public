@@ -1,7 +1,6 @@
 package ca.etsmtl.taf.payload.request;
 
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.constraints.NotBlank;
 public class TestApiRequest {
     @NotBlank
     private String method;
