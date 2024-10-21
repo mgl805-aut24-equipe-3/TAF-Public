@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { GatlingRequest } from './gatling-request';
-import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
 import { Subscription } from 'rxjs';
+import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
 import Swal from 'sweetalert2';
+import { GatlingRequest } from './gatling-request';
 
 @Component({
   selector: 'app-gatling-api',
@@ -29,41 +28,17 @@ export class GatlingApiComponent implements OnInit {
     this.span = document.getElementsByClassName("close")[0];
   }
 
-  onSubmit(){
+  onSubmit() {
     this.busy = this.performanceTestApiService.sendGatlingRequest(this.request)
-      .subscribe((response:any) => {
+      .subscribe((response: any) => {
         this.modal!.style.display = "block";
-        this.testLog = response.message;
 
-        const excludedValues: string[] = [
-          "> ECDHE-ECDSA-AES128-GCM-SHA256",
-          "> ECDHE-RSA-AES128-GCM-SHA256",
-          "> ECDHE-ECDSA-AES256-GCM-SHA384",
-          "> ECDHE-RSA-AES256-GCM-SHA384",
-          "> ECDHE-ECDSA-CHACHA20-POLY1305",
-          "> ECDHE-RSA-CHACHA20-POLY1305",
-          "> ECDHE-PSK-CHACHA20-POLY1305",
-          "> ECDHE-ECDSA-AES128-SHA",
-          "> ECDHE-RSA-AES128-SHA",
-          "> ECDHE-PSK-AES128-CBC-SHA",
-          "> ECDHE-ECDSA-AES256-SHA",
-          "> ECDHE-RSA-AES256-SHA",
-          "> ECDHE-PSK-AES256-CBC-SHA",
-          "> AES128-GCM-SHA256",
-          "> AES256-GCM-SHA384",
-          "> AES128-SHA",
-          "> PSK-AES128-CBC-SHA",
-          "> AES256-SHA",
-          "> PSK-AES256-CBC-SHA",
-          "> DES-CBC3-SHA"
-        ];
+        const pattern = /(.+)\n?/g;
+        const matches: String[] = Array.from(response.message.matchAll(pattern));
+        const arrayOfStrings = matches.map(match => match[0]);
+        this.testResult = arrayOfStrings;
 
-        const pattern = /> (.+)/g;
-        const matches = Array.from(this.testLog.matchAll(pattern));
-        const arrayOfStrings = matches.map(matches => matches[0]);
-        this.testResult = arrayOfStrings.filter(line => !excludedValues.includes(line));
-
-      }, (error: any) =>{
+      }, (error: any) => {
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
@@ -72,9 +47,7 @@ export class GatlingApiComponent implements OnInit {
       });
   }
 
-  closeModal(){
+  closeModal() {
     this.modal!.style.display = "none";
   }
-
-
 }

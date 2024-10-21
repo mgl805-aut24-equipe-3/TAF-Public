@@ -19,15 +19,15 @@ const httpOptions = {
   providedIn: 'root',
 })
 export class PerformanceTestApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   sendGatlingRequest(request: GatlingRequest): Observable<any> {
     const url = `${GATLING_API}`;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    console.log(request)
-    return this.http.post(url, request, httpOptions);
+    const response = this.http.post(url, request, httpOptions);
+    return response;
   }
   sendHttpJMeterRequest(
     jmeter_http_request: JMeterHttpRequest
