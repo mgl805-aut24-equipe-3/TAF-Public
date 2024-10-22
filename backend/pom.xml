@@ -8,7 +8,12 @@
 		<artifactId>taf-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>backend</artifactId>
+
+	<artifactId>taf-backend</artifactId>
+	<name>Test Automation Framework - Backend </name>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -37,9 +42,9 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.31</version>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>9.1.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -47,20 +52,17 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.24</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
@@ -69,11 +71,14 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
+			<version>4.12.0</version>
 		</dependency>
+
+		<!-- dependencies to other TAF modules -->
 		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>5.5</version> <!-- Use the latest version available -->
+			<groupId>ca.etsmtl</groupId>
+			<artifactId>taf-performance-jmeter</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -82,56 +87,25 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<skip>false</skip> <!-- Nécessaire lorsque mvn spring-boot:run est lancé à partir
-					du dossier
-						parent -->
-				</configuration>
+				<version>${spring-boot.version}</version>
 				<executions>
-					<execution>
-						<id>build-info</id>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-					</execution>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.parent.basedir}/frontend/target/frontend/</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.5.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.1</version>
 			</plugin>
-
-
 		</plugins>
 	</build>
-
 </project>
