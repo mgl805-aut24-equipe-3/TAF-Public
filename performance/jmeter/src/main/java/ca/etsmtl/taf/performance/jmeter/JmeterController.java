@@ -28,7 +28,7 @@ import ca.etsmtl.taf.performance.jmeter.utils.JMeterRunner;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping("/api/jmeter")
+@RequestMapping("/api/performance/jmeter")
 public class JmeterController {
 
   private ResponseEntity<?> executeTestPlan(TestPlanBase testPlan, String type) {
