@@ -8,8 +8,8 @@ import { JMeterFTPRequest } from '../performance-test-api/jmeter-api/jmeter-ftp-
 import { GatlingRequest } from '../performance-test-api/gatling-api/gatling-request';
 
 const GATLING_API = `${environment.apiUrl}/api/gatling/runSimulation`;
-const JMeter_HttpRequest_API = `${environment.apiUrl}/api/jmeter/http`;
-const JMeter_FtpRequest_API = `${environment.apiUrl}/api/jmeter/ftp`;
+const JMeter_HttpRequest_API = `${environment.apiUrl}/api/performance/jmeter/http`;
+const JMeter_FtpRequest_API = `${environment.apiUrl}/api/performance/jmeter/ftp`;
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
