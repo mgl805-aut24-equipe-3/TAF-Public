@@ -37,6 +37,7 @@ import { GatlingApiComponent } from './performance-test-api/gatling-api/gatling-
 import { JmeterApiComponent } from './performance-test-api/jmeter-api/jmeter-api.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {BusyConfig, NgBusyModule} from 'ng-busy';
+import { BusySpinnerComponent } from './busy-spinner/busy-spinner.component';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import {BusyConfig, NgBusyModule} from 'ng-busy';
     TestSeleniumComponent,
     PerformanceTestApiComponent,
     GatlingApiComponent,
-    JmeterApiComponent
+    JmeterApiComponent,
+    BusySpinnerComponent
   ],
 
     imports: [
@@ -76,6 +78,7 @@ import {BusyConfig, NgBusyModule} from 'ng-busy';
         MatSelectModule,
         NgBusyModule.forRoot(new BusyConfig({
           message: 'Veuillez patienter',
+          template: BusySpinnerComponent
         })),
     ],
   providers: [authInterceptorProviders],
