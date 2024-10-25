@@ -5,6 +5,8 @@ import { JMeterFTPRequest } from './jmeter-ftp-request';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-jmeter-api',
@@ -24,8 +26,8 @@ export class JmeterApiComponent implements OnInit {
 
   http_request: JMeterHttpRequest = new JMeterHttpRequest();
   ftp_request: JMeterFTPRequest = new JMeterFTPRequest();
-  http_description = document.getElementById(' http-description');
-  ftp_description = document.getElementById(' ftp-description');
+  http_description = document.getElementById('http-description');
+  ftp_description = document.getElementById('ftp-description');
 
   testResults: any[] = [];
   result_table: HTMLElement | null = document.getElementById('result_table');
@@ -170,5 +172,49 @@ export class JmeterApiComponent implements OnInit {
       this.http_description.style.display = 'block';
       this.switchLabel.innerText = 'HTTP';
     }
+  }
+
+  exportToPDF() {
+    const doc = new jsPDF();
+    const col = ["Data Type", "Connect", "Label", "Thread Name", "URL", "Response Code", "Latency", "Timestamp", "Elapsed", "Status", "Bytes", "Response Message", "Failure Message", "Sent Bytes"];
+    const rows = this.testResults.map(result => [
+      result.dataType,
+      result.connect,
+      result.label,
+      result.threadName,
+      result.url,
+      result.responseCode,
+      result.latency,
+      result.timestamp,
+      result.elapsed,
+      result.success === 'true' ? 'Success' : 'Failed',
+      result.bytes,
+      result.responseMessage,
+      result.failureMessage,
+      result.sentBytes
+    ]);
+
+    (doc as any).autoTable({
+      head: [col],
+      body: rows,
+      startY: 10,
+      columnStyles: {
+        0: { cellWidth: 10 },
+        1: { cellWidth: 10 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 20 },
+        5: { cellWidth: 10 },
+        6: { cellWidth: 10 },
+        7: { cellWidth: 15 },
+        8: { cellWidth: 10 },
+        9: { cellWidth: 10 },
+        10: { cellWidth: 10 },
+        11: { cellWidth: 20 },
+        12: { cellWidth: 20 },
+        13: { cellWidth: 10 }
+      }
+    });
+    doc.save('test-results.pdf');
   }
 }

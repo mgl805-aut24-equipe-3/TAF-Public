@@ -123,3 +123,7 @@ input:checked + .slider:before {
 .sidebar-content {
   overflow-y: auto; /* Ajoute un défilement si le contenu dépasse en hauteur */
 }
+
+.exportbutton {
+  margin-right: 15px;
+}
