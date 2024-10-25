@@ -47,3 +47,6 @@ results/
 # local config
 application-local.yml
 node_modules
+
+# Desktop Services Store
+.DS_Store
