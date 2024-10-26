@@ -20,6 +20,8 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "ng-busy": "^13.1.1",
     "rxjs": "~7.5.0",
     "sweetalert2": "^11.10.0",
