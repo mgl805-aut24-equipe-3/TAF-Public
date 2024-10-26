@@ -54,6 +54,21 @@ export class JmeterApiComponent implements OnInit {
   }
 
   onHttpSubmit() {
+    if (
+      !this.http_request.loop ||
+      !this.http_request.nbThreads ||
+      !this.http_request.domain ||
+      !this.http_request.method ||
+      !this.http_request.path
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Veuillez remplir tous les champs qui sont obligatoires',
+      });
+      return;
+    }
+
     this.busy = this.performanceTestApiService
       .sendHttpJMeterRequest(this.http_request)
       .subscribe((response: any[]) => {
@@ -95,6 +110,20 @@ export class JmeterApiComponent implements OnInit {
   }
 
   onFtpSubmit() {
+    if (
+      !this.http_request.loop ||
+      !this.http_request.nbThreads ||
+      !this.http_request.domain 
+      // !this.http_request.method
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Veuillez remplir tous les champs qui sont obligatoires',
+      });
+      return;
+    }
+
     this.busy = this.performanceTestApiService
       .sendFtpJMeterRequest(this.ftp_request)
       .subscribe((response: any[]) => {

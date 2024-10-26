@@ -128,12 +128,12 @@
               </div>
               <div class="row">
                   <div class="form-group col">
-                      <label for="loop">Nombre de boucles</label>
+                      <label for="loop">* Nombre de boucles</label>
                       <input type="text" class="form-control" [(ngModel)]="http_request.loop" name="loop"
                           placeholder="Exemple">
                   </div>
                   <div class="form-group col">
-                      <label for="nbThreads">Nombre d'utilisateurs</label>
+                      <label for="nbThreads">* Nombre d'utilisateurs</label>
                       <input type="text" class="form-control" [(ngModel)]="http_request.nbThreads" name="nbThreads"
                           placeholder="Exemple">
                   </div>
@@ -150,7 +150,7 @@
               </div>
               <div class="row">
                   <div class="form-group col">
-                      <label for="domain">Domaine</label>
+                      <label for="domain">* Domaine</label>
                       <input type="text" class="form-control" [(ngModel)]="http_request.domain" name="domain"
                           placeholder="Exemple">
                   </div>
@@ -167,13 +167,13 @@
               </div>
               <div class="row">
                   <div class="form-group col">
-                      <label for="path">Chemin</label>
+                      <label for="path">* Chemin</label>
                       <input type="text" class="form-control" [(ngModel)]="http_request.path" name="path"
                           placeholder="Exemple">
                   </div>
 
                   <div class="form-group typeRequete">
-                      <label for="typeRequete">Type de requête</label>
+                      <label for="typeRequete">* Type de requête</label>
                       <select class="form-control" id="typeRequete" [(ngModel)]="http_request.method"
                           name="methodType" aria-placeholder="GET, POST...">
                           <option disabled selected value="">GET, POST...</option>
@@ -211,12 +211,12 @@
           </div>
           <div class="row">
               <div class="form-group col">
-                  <label for="loop">Nombre de boucles</label>
+                  <label for="loop">* Nombre de boucles</label>
                   <input type="text" class="form-control" [(ngModel)]="ftp_request.loop" name="loop"
                       placeholder="1,2,3.." required>
               </div>
               <div class="form-group col">
-                  <label for="nbThreads">Nombre d'utilisateurs</label>
+                  <label for="nbThreads">* Nombre d'utilisateurs</label>
                   <input type="text" class="form-control" [(ngModel)]="ftp_request.nbThreads" name="nbThreads"
                       placeholder="entrez nombre d'utilisateurs" required>
               </div>
@@ -233,7 +233,7 @@
           </div>
           <div class="row">
               <div class="form-group col">
-                  <label for="domain">Domaine</label>
+                  <label for="domain">* Domaine</label>
                   <input type="text" class="form-control" [(ngModel)]="ftp_request.domain" name="domain"
                       placeholder="ex ftp.testserver.com" required>
               </div>
@@ -243,7 +243,7 @@
                       placeholder="ex 21">
               </div>
               <div class="form-group col">
-                  <label for="method">Type de requête</label>
+                  <label for="method">* Type de requête</label>
                   <select class="form-control" id="method" [(ngModel)]="ftp_request.method" name="methodType"
                       required>
                       <option disabled selected value="">GET(Retrive), POST(Store)...</option>
