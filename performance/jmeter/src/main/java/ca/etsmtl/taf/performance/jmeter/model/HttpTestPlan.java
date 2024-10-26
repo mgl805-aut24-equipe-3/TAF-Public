@@ -1,15 +1,16 @@
 package ca.etsmtl.taf.performance.jmeter.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import ca.etsmtl.taf.performance.jmeter.ApplicationStartupListenerBean;
-
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
 
 public class HttpTestPlan extends TestPlanBase {
 
@@ -125,9 +126,10 @@ public class HttpTestPlan extends TestPlanBase {
   private void replaceAndSaveVariables() {
     try {
       // Read the XML content from the file
-      String filePath = ApplicationStartupListenerBean.JMETER_TEMP_FOLDER + "HttpSamplerTemplate.jmx";
+      String filePath = new File(JMeterConfigurator.getJmeterTemplatesFolder(), "HttpSamplerTemplate.jmx")
+          .getAbsolutePath();
       String xmlContent = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
-      String target = ApplicationStartupListenerBean.JMETER_TEMP_FOLDER + "TestPlan.jmx";
+      String target = new File(JMeterConfigurator.getJmeterTemplatesFolder(), "TestPlan.jmx").getAbsolutePath();
 
       // Replace variables with Java variables (using default values if not found)
       xmlContent = replaceVariables(xmlContent);
