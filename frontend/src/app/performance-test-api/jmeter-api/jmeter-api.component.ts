@@ -38,6 +38,8 @@ export class JmeterApiComponent implements OnInit {
     'formSwitch'
   ) as HTMLInputElement;
 
+  selectedTest: any = null;
+
   constructor(private performanceTestApiService: PerformanceTestApiService) {}
 
   ngOnInit(): void {
@@ -140,6 +142,21 @@ export class JmeterApiComponent implements OnInit {
 
   closeModal() {
     this.modal!.style.display = 'none';
+  }
+
+  showTestDetails(test: any) {
+    console.log("Test details:", test);
+    this.selectedTest = test;
+  }
+
+  closeTestDetails() {
+    this.selectedTest = null;
+  }
+
+  closeModalOnOutsideClick(event: MouseEvent) {
+    if ((event.target as HTMLElement).id === 'detailModal') {
+      this.closeTestDetails();
+    }
   }
 
   toggleForms() {
