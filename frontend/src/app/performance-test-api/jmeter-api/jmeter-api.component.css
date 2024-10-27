@@ -23,7 +23,7 @@
 }
 
 h2 {
-  font-weight: normal; /* Ou 400 pour une valeur plus précise */
+  font-weight: normal; /* Remove the bold font weight */
 }
 
 .switch {
@@ -126,4 +126,20 @@ input:checked + .slider:before {
 
 .exportbutton {
   margin-right: 15px;
+}
+
+.modal-details{
+  display: block;
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-details .modal-content {
+  width: 60%; /* Réduire la largeur du deuxième modal */
 }

@@ -11,42 +11,29 @@
                     <table id="result_table" class="table table-striped">
                         <thead style="background-color: bg;">
                             <tr>
-                                <th>Data Type</th>
-                                <th>Connect</th>
                                 <th>Label</th>
                                 <th>Thread Name</th>
                                 <th>URL</th>
                                 <th>Response Code</th>
                                 <th>Latency</th>
-                                <th>Timestamp</th>
-                                <th>Elapsed</th>
                                 <th>Status</th>
-                                <th>Bytes</th>
-                                <th>Response Message</th>
-                                <th>Failure Message</th>
-                                <th>Sent Bytes</th>
+                                <th>Détail</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let result of testResults">
-
-                                <td>{{ result.dataType }}</td>
-                                <td>{{ result.connect }}</td>
                                 <td>{{ result.label }}</td>
                                 <td>{{ result.threadName }}</td>
                                 <td>{{ result.url }}</td>
                                 <td>{{ result.responseCode }}</td>
                                 <td>{{ result.latency }}</td>
-                                <td>{{ result.timestamp }}</td>
-                                <td>{{ result.elapsed }}</td>
                                 <td
                                     [style.background-color]="result.success === 'true' ? 'rgba(60, 179, 113, 0.3)' : 'rgba(255, 0, 0, 0.2)'">
                                     {{ result.success === 'true' ? 'Success' : 'Failed' }}
                                 </td>
-                                <td>{{ result.bytes }}</td>
-                                <td>{{ result.responseMessage }}</td>
-                                <td>{{ result.failureMessage }}</td>
-                                <td>{{ result.sentBytes }}</td>
+                                <td>
+                                    <button mat-raised-button style="background-color: #007bff; color: white;" (click)="showTestDetails(result)">Détail</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -55,6 +42,30 @@
             <div class="modal-footer">
                 <button mat-raised-button color="accent" (click)="exportToPDF()" class="exportbutton">Exporter</button>
                 <button mat-raised-button color="primary" (click)="closeModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+    <div id="detailModal" class="modal-details" *ngIf="selectedTest" (click)="closeModalOnOutsideClick($event)">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <span class="close" (click)="closeTestDetails()">&times;</span>
+                <h2>Détails du test</h2>
+            </div>
+            <div class="modal-body">
+                <p><strong>Data Type:</strong> {{ selectedTest.dataType }}</p>
+                <p><strong>Connect:</strong> {{ selectedTest.connect }}</p>
+                <p><strong>Label:</strong> {{ selectedTest.label }}</p>
+                <p><strong>Thread Name:</strong> {{ selectedTest.threadName }}</p>
+                <p><strong>URL:</strong> {{ selectedTest.url }}</p>
+                <p><strong>Response Code:</strong> {{ selectedTest.responseCode }}</p>
+                <p><strong>Latency:</strong> {{ selectedTest.latency }}</p>
+                <p><strong>Timestamp:</strong> {{ selectedTest.timestamp }}</p>
+                <p><strong>Elapsed:</strong> {{ selectedTest.elapsed }}</p>
+                <p><strong>Status:</strong> {{ selectedTest.success === 'true' ? 'Success' : 'Failed' }}</p>
+                <p><strong>Bytes:</strong> {{ selectedTest.bytes }}</p>
+                <p><strong>Response Message:</strong> {{ selectedTest.responseMessage }}</p>
+                <p><strong>Failure Message:</strong> {{ selectedTest.failureMessage }}</p>
+                <p><strong>Sent Bytes:</strong> {{ selectedTest.sentBytes }}</p>
             </div>
         </div>
     </div>
