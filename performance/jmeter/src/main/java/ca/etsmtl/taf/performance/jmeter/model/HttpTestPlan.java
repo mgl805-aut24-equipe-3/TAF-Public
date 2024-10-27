@@ -126,8 +126,7 @@ public class HttpTestPlan extends TestPlanBase {
   private void replaceAndSaveVariables() {
     try {
       // Read the XML content from the file
-      String filePath = new File(JMeterConfigurator.getJmeterTemplatesFolder(), "HttpSamplerTemplate.jmx")
-          .getAbsolutePath();
+      String filePath = JMeterConfigurator.getHTTPSamplerTemplate();
       String xmlContent = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
       String target = new File(JMeterConfigurator.getJmeterTemplatesFolder(), "TestPlan.jmx").getAbsolutePath();
 
