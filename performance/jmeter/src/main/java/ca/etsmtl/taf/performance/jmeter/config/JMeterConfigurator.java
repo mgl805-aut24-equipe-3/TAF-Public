@@ -5,13 +5,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
-import org.apache.jmeter.gui.action.template.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,20 +35,71 @@ public class JMeterConfigurator {
     private static final File JMETER_TEMPLATES_FOLDER = new File(JMETER_TEMP_FOLDER, "templates");
     private static final File JMETER_RESULTS_FOLDER = new File(JMETER_TEMP_FOLDER, "results");
 
+    private static final List<String> JMETER_PROPERTIES_FILES = List.of("jmeter.properties", "log4j2.xml",
+            "reportgenerator.properties", "saveservice.properties", "system.properties", "upgrade.properties",
+            "user.properties");
+
+    private static final List<String> JMETER_TEMPLATES_FILES = List.of("FTPSamplerTemplate.jmx",
+            "HTTPSamplerTemplate.jmx");
+
+    /**
+     * Get the path to the JMeter home folder used during runtime
+     * 
+     * @return The path
+     */
     public static String getJmeterHome() {
         return JMETER_TEMP_FOLDER.getAbsolutePath();
     }
 
+    /**
+     * Get the path to the JMeter bin folder used during runtime.
+     * This is where all JMeter properties file are stored.
+     * 
+     * @return The path
+     */
     public static String getJmeterBinFolder() {
         return JMETER_BIN_FOLDER.getAbsolutePath();
     }
 
+    /**
+     * Get the path to the JMeter templates folder used during runtime.
+     * The templates most contains JMX files (test plans) that can be used as either
+     * HTTP or FTP tests.
+     * 
+     * @return The path
+     */
     public static String getJmeterTemplatesFolder() {
         return JMETER_TEMPLATES_FOLDER.getAbsolutePath();
     }
 
+    /**
+     * Get the path to the JMeter results folder used during runtime.
+     * This is where JMeter will store the results of the test runs.
+     * 
+     * @return The path
+     */
     public static String getJmeterResultsFolder() {
         return JMETER_RESULTS_FOLDER.getAbsolutePath();
+    }
+
+    /**
+     * Get the absolute path to the JMX file containing the test plan for HTTP
+     * tests.
+     * 
+     * @return The absolute path path
+     */
+    public static String getHTTPSamplerTemplate() {
+        return new File(JMETER_TEMPLATES_FOLDER, "HTTPSamplerTemplate.jmx").getAbsolutePath();
+    }
+
+    /**
+     * Get the absolute path to the JMX file containing the test plan for FTP
+     * tests.
+     * 
+     * @return The absolute path path
+     */
+    public static String getFTPSamplerTemplate() {
+        return new File(JMETER_TEMPLATES_FOLDER, "FTPSamplerTemplate.jmx").getAbsolutePath();
     }
 
     /**
@@ -79,7 +129,7 @@ public class JMeterConfigurator {
     }
 
     /**
-     * Create the temp folder for JMeter and the templates folder
+     * Create the temp folder for JMeter and the templates folder used at runtime.
      */
     private void createTempFolders() {
         if (!JMETER_TEMP_FOLDER.exists()) {
@@ -129,50 +179,55 @@ public class JMeterConfigurator {
 
     /**
      * Copy all JMeter properties files from resources to the temp folder
+     * JMeter properties files are found in the Maven package
+     * org.apache.jmeter:ApacheJMeter_config
+     * Using {@link java.lang.ClassLoader#getResourceAsStream(String)
+     * getResourceAsStream} to ensure portability.
+     * 
+     * @see <a href=
+     *      "https://www.baeldung.com/java-classpath-resource-cannot-be-opened">How
+     *      to Avoid the Java FileNotFoundException When Loading Resources</a>
      */
     private void copyJMeterPropertiesFiles() {
-        try {
-            ClassPathResource resource = new ClassPathResource("org/apache/jmeter");
-            File resourceFolder = resource.getFile();
-            File[] files = resourceFolder.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory() || !file.getName().endsWith(".properties")) {
-                        continue;
-                    }
-                    Path sourcePath = file.toPath();
-                    Path destinationPath = new File(JMETER_BIN_FOLDER, file.getName()).toPath();
-                    Files.copy(sourcePath, destinationPath,
-                            StandardCopyOption.REPLACE_EXISTING);
-                    logger.debug("Copied JMeter properties file: {} -> {}", file.getName(), destinationPath);
+        for (String propertiesFile : JMETER_PROPERTIES_FILES) {
+            try (var inputStream = getClass().getResourceAsStream("/bin/" + propertiesFile)) {
+                if (inputStream == null) {
+                    logger.warn("Resource not found: {}", propertiesFile);
+                    continue;
                 }
+                Path destinationPath = new File(JMETER_BIN_FOLDER, propertiesFile).toPath();
+                Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                logger.debug("Copied JMeter properties file: {} -> {}", propertiesFile, destinationPath);
+            } catch (IOException e) {
+                logger.error("Error copying JMeter properties file: {}", propertiesFile, e);
             }
-        } catch (IOException e) {
-            logger.error("Error copying JMeter properties files", e);
         }
     }
 
     /**
      * Copy all JMX template files from resources to the temp/templates folder
+     * Using {@link java.lang.ClassLoader#getResourceAsStream(String)
+     * getResourceAsStream} to ensure portability.
+     * 
+     * @see <a href=
+     *      "https://www.baeldung.com/java-classpath-resource-cannot-be-opened">How
+     *      to Avoid the Java FileNotFoundException When Loading Resources</a>
      */
     private void copyJMXTemplateFiles() {
-        try {
-            // Create the templates folder in the temp folder
-            ClassPathResource resource = new ClassPathResource("org/apache/jmeter/templates");
-            File resourceFolder = resource.getFile();
-            File[] files = resourceFolder.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    Path sourcePath = file.toPath();
-                    Path destinationPath = new File(
-                            JMETER_TEMPLATES_FOLDER, file.getName()).toPath();
-                    Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                    logger.debug("Copied JMeter template file: {} -> {}", file.getName(), destinationPath);
+        for (String templateFile : JMETER_TEMPLATES_FILES) {
+            try (var inputStream = getClass().getResourceAsStream("/org/apache/jmeter/templates/" + templateFile)) {
+                if (inputStream == null) {
+                    logger.warn("Resource not found: {}", templateFile);
+                    continue;
                 }
+                Path destinationPath = new File(JMETER_TEMPLATES_FOLDER, templateFile).toPath();
+                Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                logger.debug("Copied JMeter template file: {} -> {}", templateFile, destinationPath);
+            } catch (IOException e) {
+                logger.error("Error copying JMeter template file: {}", templateFile, e);
             }
-        } catch (IOException e) {
-            logger.error("Error copying JMX template files:", e);
         }
+
     }
 
 }
