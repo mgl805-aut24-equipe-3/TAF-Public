@@ -1,21 +1,29 @@
 {
     "configurations": [
         {
-            "type": "java",
-            "name": "Spring Boot-TestAutomationFrameworkApplication<backend>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "ca.etsmtl.taf.TestAutomationFrameworkApplication",
-            "projectName": "backend",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
-          }
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestAutomationFrameworkApplication<taf-backend>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ca.etsmtl.taf.TestAutomationFrameworkApplication",
+            "projectName": "taf-backend",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 5005,
+            "projectName": "taf-backend"
+        }
     ]
 }

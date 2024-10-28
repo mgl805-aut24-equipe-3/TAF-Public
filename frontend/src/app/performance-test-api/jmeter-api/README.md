@@ -1,3 +1,27 @@
+# Plan de test `frontend\src\app\performance-test-api\jmeter-api\jmeter-api.component.spec.ts`
+
+## Test de création du composant
+- Vérifier que le composant est créé correctement.
+
+## Test de la méthode `onHttpSubmit`
+- Vérifier que la méthode `sendHttpJMeterRequest` du service est appelée.
+- Vérifier que la modal s'affiche si la réponse contient des résultats.
+- Vérifier que SweetAlert s'affiche en cas d'erreur ou si la réponse est vide.
+
+## Test de la méthode `onFtpSubmit`
+- Vérifier que la méthode `sendFtpJMeterRequest` du service est appelée.
+- Vérifier que la modal s'affiche si la réponse contient des résultats.
+- Vérifier que SweetAlert s'affiche en cas d'erreur ou si la réponse est vide.
+
+## Test de la méthode `closeModal`
+- Vérifier que la modal est fermée.
+
+## Test de la méthode `toggleForms`
+- Vérifier que les formulaires HTTP et FTP sont affichés/masqués correctement en fonction de l'état du switch.
+
+# Code `jmeter-api.component.spec.ts`
+
+```ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JmeterApiComponent } from './jmeter-api.component';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
@@ -155,3 +179,21 @@ describe('JmeterApiComponent', () => {
     expect(component.switchLabel.innerText).toBe('HTTP');
   });
 });
+```
+
+# Explications
+
+## Test de création du composant
+Vérifie que le composant est créé correctement.
+
+## Test de `onHttpSubmit`
+Vérifie que la méthode `sendHttpJMeterRequest` du service est appelée et que la modal s'affiche si la réponse contient des résultats.
+
+## Test de `onFtpSubmit`
+Vérifie que la méthode `sendFtpJMeterRequest` du service est appelée et que la modal s'affiche si la réponse contient des résultats.
+
+## Test de `closeModal`
+Vérifie que la méthode `closeModal` définit le style d'affichage de la modal à "none".
+
+## Test de `toggleForms`
+Vérifie que les formulaires HTTP et FTP sont affichés/masqués correctement en fonction de l'état du switch.
