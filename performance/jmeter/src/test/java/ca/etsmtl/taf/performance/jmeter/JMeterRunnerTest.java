@@ -24,7 +24,7 @@ public class JMeterRunnerTest {
     @Test
     void testExecuteHttpTestPlan() {
 
-        // "nbThreads": "10",
+        // "nbThreads": "3",
         // "rampTime": "5",
         // "duration": "",
         // "domain": "httpbin.org",
@@ -32,16 +32,16 @@ public class JMeterRunnerTest {
         // "protocol": "https",
         // "path": "/get",
         // "method": "GET",
-        // "loop": "3"
+        // "loop": "2"
 
         HttpTestPlan testPlan = new HttpTestPlan();
-        testPlan.setNbThreads("10");
+        testPlan.setNbThreads("3");
         testPlan.setRampTime("5");
         testPlan.setProtocol("https");
         testPlan.setDomain("httpbin.org");
         testPlan.setMethod("GET");
         testPlan.setPath("/get");
-        testPlan.setLoop("3");
+        testPlan.setLoop("2");
         testPlan.setDuration("");
         testPlan.setPort("");
         testPlan.setData("");
