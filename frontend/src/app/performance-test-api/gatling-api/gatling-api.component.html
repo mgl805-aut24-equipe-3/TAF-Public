@@ -3,10 +3,15 @@
     <div class="modal-content">
       <div class="modal-header">
         <span class="close" (click)="closeModal()">&times;</span>
-        <h2>Résultat de test(notez qu'à la fin, il y a le lien vers de rapport de test)</h2>
+        <h2>Résultat de test</h2>
       </div>
       <div class="modal-body">
-        <p *ngFor="let value of testResult">{{value}}</p>
+        <div *ngFor="let value of testResult" class="test-result">
+          <span class="test-result-icon" [ngClass]="{'test-result-success': value.success, 'test-result-failure': !value.success}">
+            <i class="material-icons">{{ value.success ? 'check_circle' : 'error' }}</i>
+          </span>
+          <p>{{value.message}}</p>
+        </div>
       </div>
       <div class="modal-footer">
         <button mat-raised-button  color="primary" (click)="closeModal()">Fermer</button>
@@ -79,7 +84,7 @@
         </div>
 
         <div class="row button-row">
-          <button mat-raised-button class="test-button" color="primary" (click)="onSubmit()">Tester</button>
+          <button type="button" mat-raised-button class="test-button" color="primary" (click)="onSubmit()">Tester</button>
         </div>
         <div [ngBusy]="busy"></div>
       </form>
