@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { JMeterHttpRequest } from './jmeter-http-request';
 import { JMeterFTPRequest } from './jmeter-ftp-request';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
+
 
 @Component({
   selector: 'app-jmeter-api',
@@ -36,7 +37,9 @@ export class JmeterApiComponent implements OnInit {
     'formSwitch'
   ) as HTMLInputElement;
 
-  constructor(private performanceTestApiService: PerformanceTestApiService) {}
+  constructor(
+    private fb: FormBuilder,
+    private performanceTestApiService: PerformanceTestApiService) {}
 
   ngOnInit(): void {
     this.modal = document.getElementById('myModal');
@@ -48,19 +51,83 @@ export class JmeterApiComponent implements OnInit {
     this.http_description = document.getElementById('http-description');
     this.ftp_description = document.getElementById('ftp-description');
 
-    this.switchCheckbox = document.getElementById(
+       this.switchCheckbox = document.getElementById(
       'formSwitch'
     ) as HTMLInputElement;
-  }
+
+    }
+  
+    validateHttpForm(): boolean {
+      let isValid = true;
+      const requiredFields = [
+        { element: 'loop', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'nbThreads', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'domain', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'path', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'methodType', errorMessage: 'Veuillez sélectionner un type de requête' }
+      ];
+  
+      requiredFields.forEach(field => {
+        const inputElement = document.getElementsByName(field.element)[0] as HTMLInputElement | null;
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'text-danger';
+  
+        if (inputElement?.nextElementSibling) {
+          inputElement.nextElementSibling.remove();
+        }
+        if (inputElement && inputElement.value.trim() === '') {
+          isValid = false;
+          inputElement.classList.add('is-invalid');
+          errorDiv.innerText = field.errorMessage;
+          inputElement.insertAdjacentElement('afterend', errorDiv);
+        } else {
+          inputElement?.classList.remove('is-invalid');
+        }
+      });
+  
+      return isValid;
+    }
+
+    validateFtpForm(): boolean {
+      let isValid = true;
+  
+      const requiredFields = [
+        { element: 'loopFtp', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'nbThreadsFtp', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'domainFtp', errorMessage: 'Veuillez entrer une valeur' },
+        { element: 'methodTypeFtp', errorMessage: 'Veuillez sélectionner un type de requête' }
+      ];
+  
+      requiredFields.forEach(field => {
+        const inputElement = document.getElementsByName(field.element)[0] as HTMLInputElement | null;
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'text-danger';
+  
+        if (inputElement?.nextElementSibling) {
+          inputElement.nextElementSibling.remove();
+        }
+  
+        if (inputElement && inputElement.value.trim() === '') {
+          isValid = false;
+          inputElement.classList.add('is-invalid');
+          errorDiv.innerText = field.errorMessage;
+          inputElement.insertAdjacentElement('afterend', errorDiv);
+        } else {
+          inputElement?.classList.remove('is-invalid');
+        }
+      });
+  
+      return isValid;
+    }
+
+    
+
+  
 
   onHttpSubmit() {
-    if (
-      !this.http_request.loop ||
-      !this.http_request.nbThreads ||
-      !this.http_request.domain ||
-      !this.http_request.method ||
-      !this.http_request.path
-    ) {
+    
+
+    if (!this.validateHttpForm()) {
       Swal.fire({
         icon: 'error',
         title: 'Erreur',
@@ -110,12 +177,7 @@ export class JmeterApiComponent implements OnInit {
   }
 
   onFtpSubmit() {
-    if (
-      !this.http_request.loop ||
-      !this.http_request.nbThreads ||
-      !this.http_request.domain 
-      // !this.http_request.method
-    ) {
+    if (!this.validateFtpForm()) {
       Swal.fire({
         icon: 'error',
         title: 'Erreur',
