@@ -27,6 +27,10 @@ import org.apache.jorphan.collections.HashTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 
@@ -192,29 +196,34 @@ public class JMeterRunner {
   }
 
   private static List<Map<String, String>> convertCSVtoJSON(String csvFilePath)
-      throws IOException, CsvException, CsvException {
-    try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
-      List<String[]> csvData = reader.readAll();
+      throws IOException, CsvException {
 
-      String[] headers = csvData.get(0);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-      return csvData.stream()
-          .skip(1) // Skip the header row
-          .map(row -> {
-            Map<String, String> jsonMap = createJsonMap(headers, row);
-            return jsonMap;
-          })
-          .collect(Collectors.toList());
-    }
-  }
+        ArrayNode jsonArray = mapper.createArrayNode();
 
-  private static Map<String, String> createJsonMap(String[] headers, String[] values) {
+        try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
+          List<String[]> csvData = reader.readAll();
 
-    // BUG: #35 The values array may have less elements than the headers array,
-    // which will cause an ArrayIndexOutOfBoundsException
-    return IntStream.range(0, headers.length)
-        .boxed()
-        .collect(Collectors.toMap(i -> headers[i], i -> values[i]));
+          String[] headers = csvData.get(0);
+
+          for (int i = 1; i < csvData.size(); i++) {
+            String[] row = csvData.get(i);
+            ObjectNode jsonObject = mapper.createObjectNode();
+
+            for (int j = 0; j < headers.length; j++) {
+              jsonObject.put(headers[j], j < row.length ? row[j] : null);
+            }
+
+            jsonArray.add(jsonObject);
+          }
+        } catch (IndexOutOfBoundsException e) {
+          // Ignore
+          logger.warn("Error parsing CSV file: {}", e.getMessage());
+        }
+
+        return mapper.convertValue(jsonArray, new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, String>>>() {});
   }
 
   private static class TestListener implements TestStateListener {
