@@ -1,5 +1,9 @@
 package ca.etsmtl.taf.performance.jmeter.model;
 
+import java.io.File;
+
+import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
+
 public class FTPTestPlan extends TestPlanBase {
   private String remotefile;
   private String localfile;
@@ -82,8 +86,8 @@ public class FTPTestPlan extends TestPlanBase {
   }
   @Override
   public void generateTestPlan() {
-    replaceAndSaveVariables("backend/src/main/resources/jmeter/FTPSamplerTemplate.jmx",
-            "backend/src/main/resources/jmeter/FTPTestPlan.jmx",
+    replaceAndSaveVariables(new File(JMeterConfigurator.getJmeterTemplatesFolder(),"FTPSamplerTemplate.jmx").getAbsolutePath(),
+    new File(JMeterConfigurator.getJmeterTemplatesFolder(),"TestPlan.jmx").getAbsolutePath(),
             "FTPSamplerTemplate");
   }
 

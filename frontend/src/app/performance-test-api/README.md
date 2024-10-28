@@ -1,3 +1,23 @@
+# Plan de test
+
+## Fichier : `frontend\src\app\performance-test-api\performance-test-api.component.spec.ts`
+
+### Test de création du composant
+- Vérifier que le composant est créé correctement.
+
+### Test de la méthode `ngOnInit`
+- Vérifier que `isLoggedIn` est défini correctement en fonction de la présence du token.
+- Vérifier que les rôles de l'utilisateur sont récupérés correctement.
+- Vérifier que `showAdminBoard` est défini correctement en fonction des rôles de l'utilisateur.
+- Vérifier que `fullName` est défini correctement.
+
+### Test de la méthode `logout`
+- Vérifier que la méthode `signOut` du service `TokenStorageService` est appelée et que la page est rechargée.
+
+# Code pour `performance-test-api.component.spec.ts`
+
+
+```ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { TokenStorageService } from './_services/token-storage.service';
@@ -54,3 +74,26 @@ describe('AppComponent', () => {
     expect(window.location.reload).toHaveBeenCalled();
   });
 });
+```
+
+# Explications
+
+## Accès aux propriétés privées
+Pour accéder à une propriété privée dans un test, vous pouvez utiliser `(component as any).roles`. Cela contourne la restriction d'accès aux propriétés privées.
+
+## Spies et mocks
+Utilisation de `jasmine.createSpyObj` pour créer des mocks des méthodes du service `TokenStorageService`.
+
+## Initialisation des tests
+Configuration du module de test avec `TestBed.configureTestingModule` et initialisation des composants et services nécessaires.
+
+## Tests unitaires
+
+### Création du composant
+Vérifie que le composant est créé correctement.
+
+### Initialisation des propriétés
+Vérifie que `ngOnInit` initialise correctement les propriétés du composant.
+
+### Déconnexion
+Vérifie que la méthode `logout` appelle `signOut` et recharge la page.
