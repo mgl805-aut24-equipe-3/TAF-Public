@@ -41,9 +41,6 @@ export class JmeterApiComponent implements OnInit {
 
   selectedTest: any = null;
 
-  selectedTest: any = null;
-
-  selectedTest: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -132,15 +129,10 @@ export class JmeterApiComponent implements OnInit {
 
   
 
-  onHttpSubmit() {
+    onHttpSubmit(showAlert: boolean = false) {
     
 
     if (!this.validateHttpForm()) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: 'Veuillez remplir tous les champs qui sont obligatoires',
-      });
       return;
     }
 
@@ -186,11 +178,6 @@ export class JmeterApiComponent implements OnInit {
 
   onFtpSubmit() {
     if (!this.validateFtpForm()) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: 'Veuillez remplir tous les champs qui sont obligatoires',
-      });
       return;
     }
 
