@@ -11,11 +11,10 @@ import { GatlingRequest } from './gatling-request';
 })
 export class GatlingApiComponent implements OnInit {
 
-  modal = document.getElementById("myModal");
-  span = document.getElementsByClassName("close")[0];
+  modal: HTMLElement | null = null;
+  span: HTMLElement | null = null;
   testResult: any;
   testLog: String = "";
-  reportFilePath: String = "";
 
   busy: Subscription | undefined;
 
@@ -25,19 +24,25 @@ export class GatlingApiComponent implements OnInit {
 
   ngOnInit(): void {
     this.modal = document.getElementById("myModal");
-    this.span = document.getElementsByClassName("close")[0];
+    this.span = document.getElementsByClassName("close")[0] as HTMLElement;
   }
 
   onSubmit() {
     this.busy = this.performanceTestApiService.sendGatlingRequest(this.request)
       .subscribe((response: any) => {
         this.modal!.style.display = "block";
-
+  
+        // Extraction des messages de la réponse de l'API
         const pattern = /(.+)\n?/g;
         const matches: String[] = Array.from(response.message.matchAll(pattern));
         const arrayOfStrings = matches.map(match => match[0]);
-        this.testResult = arrayOfStrings;
-
+  
+        // Détermination du succès ou de l'échec pour chaque message
+        this.testResult = arrayOfStrings.map(message => ({
+          message,
+          success: message.includes('OK') // Utilisation de 'OK' pour indiquer le succès (On check la présence de 'OK' dans le message)
+        }));
+  
       }, (error: any) => {
         Swal.fire({
           icon: 'error',
