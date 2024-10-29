@@ -3,7 +3,6 @@ package ca.etsmtl.taf.performance.jmeter.utils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputFilter.Config;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,6 +28,7 @@ import org.apache.jorphan.collections.HashTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -38,6 +38,7 @@ import com.opencsv.exceptions.CsvException;
 
 import ca.etsmtl.taf.performance.jmeter.JMeterRunnerException;
 import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
+import ca.etsmtl.taf.performance.jmeter.model.JMeterResponse;
 import ca.etsmtl.taf.performance.jmeter.model.TestPlanBase;
 import ca.etsmtl.taf.performance.jmeter.provider.JmeterPathProvider;
 
@@ -122,22 +123,42 @@ public class JMeterRunner {
 
   }
 
-  public static String executeTestPlanAndGenerateReport(TestPlanBase testPlan) throws JMeterRunnerException {
+  public static JMeterResponse executeTestPlanAndGenerateReport(TestPlanBase testPlan) throws JMeterRunnerException {
 
-    String reportLocation = null;
-    File resultsFile = getResultsFile();
+    JMeterResponse jMeterResponse = new JMeterResponse("", "", null, null);
+    JMeterResponse.JMeterResponseDetails jMeterResponseDetails = jMeterResponse.new JMeterResponseDetails(null, null);
+    jMeterResponse.setDetails(jMeterResponseDetails);
     try {
+      File resultsFile = getResultsFile();
       testPlan.generateTestPlan();
 
       initializeJMeter();
 
-      reportLocation = runTests(resultsFile);
+      String dashboardLocation = runTests(resultsFile);
+
+      try {
+        // Load statistics.json from the dashboardDir folder and deserialize
+        File statisticsFile = new File(dashboardLocation, "statistics.json");
+        if (statisticsFile.exists()) {
+          logger.info("Loading statistics file generated at {}", statisticsFile.getAbsolutePath());
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> jsonData = mapper.readValue(statisticsFile, new TypeReference<Map<String, Object>>() {});
+        jMeterResponse.setSummary(jsonData);
+
+        // Merge statistics and dashboarddir into a single JSON object
+        jMeterResponseDetails.setContentType("html");
+        jMeterResponseDetails.setLocationURL(dashboardLocation);
+      } catch (IOException e) {
+        logger.error("Error loading statistics file", e);
+        throw new JMeterRunnerException(e.getMessage(), e);
+      }
 
     } catch (JMeterRunnerException e) {
       throw new JMeterRunnerException(e.getMessage(), e);
     }
 
-    return reportLocation;
+    return jMeterResponse;
 
   }
 
@@ -210,17 +231,17 @@ public class JMeterRunner {
       // Wait for the tests to finish
       latch.await();
 
-      // Generate HTML dashboard report
-      String htmlOutputDir = new File(JMeterConfigurator.getJmeterResultsFolder(),
+      // Generate HTML dashboard report in dashboardDir folder
+      String dashboardDir = new File(JMeterConfigurator.getJmeterResultsFolder(),
           "dashboard_" + getResultsFile().getName().replace(".csv", "")).getAbsolutePath();
-      String jsonOutputDir = new File(JMeterConfigurator.getJmeterResultsFolder(),
-          "json_" + getResultsFile().getName().replace(".csv", "")).getAbsolutePath();
-      JMeterUtils.setProperty("jmeter.reportgenerator.exporter.html.property.output_dir", htmlOutputDir);
-      JMeterUtils.setProperty("jmeter.reportgenerator.exporter.json.property.output_dir", jsonOutputDir);
+      JMeterUtils.setProperty("jmeter.reportgenerator.exporter.html.property.output_dir", dashboardDir);
+      JMeterUtils.setProperty("jmeter.reportgenerator.exporter.json.property.output_dir", dashboardDir);
       ReportGenerator generator = new ReportGenerator(resultsFile.getAbsolutePath(), null);
       generator.generate();
 
-      return htmlOutputDir;
+      logger.info("JMeter tests completed successfully");
+
+      return dashboardDir;
 
     } catch (IllegalUserActionException | IOException | InterruptedException | JMeterEngineException e) {
       logger.error("Error running JMeter test", e);
