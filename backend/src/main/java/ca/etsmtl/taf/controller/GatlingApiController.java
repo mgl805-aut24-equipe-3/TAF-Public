@@ -102,7 +102,7 @@ public class GatlingApiController {
 
         returnString += "---- Generated Report ------------------------------------------------------\n";
 
-        String regex = "Please open the following file: (file:///[^\s]+|https?://[^\s]+)";
+        String regex = "Please open the following file: (file:///[^\\s]+|https?://[^\\s]+)";
 
         pattern = Pattern.compile(regex, Pattern.MULTILINE);
         matcher = pattern.matcher(output);
