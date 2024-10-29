@@ -314,7 +314,9 @@ public class JMeterConfigurator implements WebMvcConfigurer {
                     continue;
                 }
 
-                String resourcePath = resource.getURL().toString().split("!")[1];
+                String resourcePathParts[] = resource.getURL().toString().split("!");
+                String resourcePath = resourcePathParts[resourcePathParts.length - 1];
+                
                 Path targetResourcePath = new File(JMETER_TEMP_FOLDER, resourcePath)
                         .toPath();
 
