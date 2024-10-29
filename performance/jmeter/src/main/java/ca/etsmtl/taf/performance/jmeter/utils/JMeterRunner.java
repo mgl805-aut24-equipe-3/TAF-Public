@@ -3,14 +3,13 @@ package ca.etsmtl.taf.performance.jmeter.utils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputFilter.Config;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.jmeter.engine.JMeterEngine;
 import org.apache.jmeter.engine.JMeterEngineException;
@@ -18,6 +17,9 @@ import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
+import org.apache.jmeter.report.config.ConfigurationException;
+import org.apache.jmeter.report.dashboard.GenerationException;
+import org.apache.jmeter.report.dashboard.ReportGenerator;
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.reporters.Summariser;
 import org.apache.jmeter.save.SaveService;
@@ -36,6 +38,7 @@ import com.opencsv.exceptions.CsvException;
 
 import ca.etsmtl.taf.performance.jmeter.JMeterRunnerException;
 import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
+import ca.etsmtl.taf.performance.jmeter.model.TestPlanBase;
 import ca.etsmtl.taf.performance.jmeter.provider.JmeterPathProvider;
 
 /**
@@ -107,7 +110,7 @@ public class JMeterRunner {
     try {
       initializeJMeter();
 
-      startTests(resultsFile);
+      runTests(resultsFile);
 
       results = JMeterRunner.convertCSVtoJSON(resultsFile.getAbsolutePath());
 
@@ -116,6 +119,25 @@ public class JMeterRunner {
     }
 
     return results;
+
+  }
+
+  public static String executeTestPlanAndGenerateReport(TestPlanBase testPlan) throws JMeterRunnerException {
+
+    String reportLocation = null;
+    File resultsFile = getResultsFile();
+    try {
+      testPlan.generateTestPlan();
+
+      initializeJMeter();
+
+      reportLocation = runTests(resultsFile);
+
+    } catch (JMeterRunnerException e) {
+      throw new JMeterRunnerException(e.getMessage(), e);
+    }
+
+    return reportLocation;
 
   }
 
@@ -153,7 +175,7 @@ public class JMeterRunner {
 
   }
 
-  private static void startTests(File resultsFile) throws JMeterRunnerException {
+  private static String runTests(File resultsFile) throws JMeterRunnerException {
 
     try {
       // Used to wait for the tests to finish
@@ -188,42 +210,58 @@ public class JMeterRunner {
       // Wait for the tests to finish
       latch.await();
 
+      // Generate HTML dashboard report
+      String htmlOutputDir = new File(JMeterConfigurator.getJmeterResultsFolder(),
+          "dashboard_" + getResultsFile().getName().replace(".csv", "")).getAbsolutePath();
+      String jsonOutputDir = new File(JMeterConfigurator.getJmeterResultsFolder(),
+          "json_" + getResultsFile().getName().replace(".csv", "")).getAbsolutePath();
+      JMeterUtils.setProperty("jmeter.reportgenerator.exporter.html.property.output_dir", htmlOutputDir);
+      JMeterUtils.setProperty("jmeter.reportgenerator.exporter.json.property.output_dir", jsonOutputDir);
+      ReportGenerator generator = new ReportGenerator(resultsFile.getAbsolutePath(), null);
+      generator.generate();
+
+      return htmlOutputDir;
+
     } catch (IllegalUserActionException | IOException | InterruptedException | JMeterEngineException e) {
       logger.error("Error running JMeter test", e);
       throw new JMeterRunnerException(e.getMessage(), e);
+    } catch (ConfigurationException | GenerationException e) {
+      logger.error("Error generating JMeter report", e);
+      throw new JMeterRunnerException(e.getMessage(), e);
     }
-
   }
 
   private static List<Map<String, String>> convertCSVtoJSON(String csvFilePath)
       throws IOException, CsvException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        ArrayNode jsonArray = mapper.createArrayNode();
+    ArrayNode jsonArray = mapper.createArrayNode();
 
-        try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
-          List<String[]> csvData = reader.readAll();
+    try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
+      List<String[]> csvData = reader.readAll();
 
-          String[] headers = csvData.get(0);
+      String[] headers = csvData.get(0);
 
-          for (int i = 1; i < csvData.size(); i++) {
-            String[] row = csvData.get(i);
-            ObjectNode jsonObject = mapper.createObjectNode();
+      for (int i = 1; i < csvData.size(); i++) {
+        String[] row = csvData.get(i);
+        ObjectNode jsonObject = mapper.createObjectNode();
 
-            for (int j = 0; j < headers.length; j++) {
-              jsonObject.put(headers[j], j < row.length ? row[j] : null);
-            }
-
-            jsonArray.add(jsonObject);
-          }
-        } catch (IndexOutOfBoundsException e) {
-          // Ignore
-          logger.warn("Error parsing CSV file: {}", e.getMessage());
+        for (int j = 0; j < headers.length; j++) {
+          jsonObject.put(headers[j], j < row.length ? row[j] : null);
         }
 
-        return mapper.convertValue(jsonArray, new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, String>>>() {});
+        jsonArray.add(jsonObject);
+      }
+    } catch (IndexOutOfBoundsException e) {
+      // Ignore
+      logger.warn("Error parsing CSV file: {}", e.getMessage());
+    }
+
+    return mapper.convertValue(jsonArray,
+        new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, String>>>() {
+        });
   }
 
   private static class TestListener implements TestStateListener {

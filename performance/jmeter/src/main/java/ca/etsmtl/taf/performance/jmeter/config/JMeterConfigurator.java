@@ -2,36 +2,53 @@ package ca.etsmtl.taf.performance.jmeter.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * This class is responsible for performing initialization tasks on application
+ * This class is responsible for performing initialization tasks of JMeter
+ * component on application
  * startup:
  * - Creating a temp folder for JMeter
  * - Copying the JMX template files from resources to the temp folder
  * - Copying JMeter properties files from resources to the temp folder
+ * - Initializing the resource handler to serve the JMeter results folder as a
+ * static resource
  * 
  * These files are necessary for running JMeter test plans.
  * 
  * @version 1.0
  */
 @Component
-public class JMeterConfigurator {
+public class JMeterConfigurator implements WebMvcConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(JMeterConfigurator.class);
     private static final File SYSTEM_TEMP_FOLDER = new File(System.getProperty("java.io.tmpdir"));
 
     private static final File JMETER_TEMP_FOLDER = new File(SYSTEM_TEMP_FOLDER, "jmeter");
     private static final File JMETER_BIN_FOLDER = new File(JMETER_TEMP_FOLDER, "bin");
+    private static final File JMETER_REPORT_TEMPLATE_FOLDER = new File(JMETER_BIN_FOLDER, "report-template");
     private static final File JMETER_TEMPLATES_FOLDER = new File(JMETER_TEMP_FOLDER, "templates");
     private static final File JMETER_RESULTS_FOLDER = new File(JMETER_TEMP_FOLDER, "results");
 
@@ -41,6 +58,9 @@ public class JMeterConfigurator {
 
     private static final List<String> JMETER_TEMPLATES_FILES = List.of("FTPSamplerTemplate.jmx",
             "HTTPSamplerTemplate.jmx");
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
     /**
      * Get the path to the JMeter home folder used during runtime
@@ -107,17 +127,20 @@ public class JMeterConfigurator {
      * initialized and is
      * ready to listen to requests.
      * 
-     * It creates a temp folder for JMeter and copies various files from embedded
-     * resources found
-     * in package org.apache.jmeter to the temp folder.
+     * It creates a temp folder for JMeter and copies various files that JMeter
+     * requires at runtime. All the files are container in the Maven package
+     * org.apache.jmeter:ApacheJMeter_config.
      * 
      * @param event ApplicationReadyEvent
+     * @see <a href=
+     *      "https://mvnrepository.com/artifact/org.apache.jmeter/ApacheJMeter_config">JMeter
+     *      config package</a>
      */
     @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
         // Create the temp folder for JMeter and the templates folder
-        createTempFolders();
+        createJMeterFolders();
 
         // Copy all properties files from resources folder org.apache.jmeter to the temp
         // folder
@@ -126,55 +149,87 @@ public class JMeterConfigurator {
         // Copy all JMX template files from resources folder org.apache.jmeter.templates
         // to the temp folder
         copyJMXTemplateFiles();
+
+        // Copy all report template files from resources folder
+        // org.apache.jmeter.report.templates
+        // to the temp folder
+        copyReportTemplateFiles();
+    }
+
+    @Override
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/api/performance/jmeter/report/**")
+                .addResourceLocations("file:" + JMETER_RESULTS_FOLDER.getAbsolutePath());
     }
 
     /**
-     * Create the temp folder for JMeter and the templates folder used at runtime.
+     * Create the folders that JMeter requires at runtime.
      */
-    private void createTempFolders() {
+    private void createJMeterFolders() {
         if (!JMETER_TEMP_FOLDER.exists()) {
-            boolean success = JMETER_TEMP_FOLDER.mkdirs();
-
-            if (success) {
-                logger.info("JMeter temp folder created successfully!");
-            } else {
-                logger.info("Failed to create JMeter temp folder!");
-                // Dramatic failure
-                throw new RuntimeException();
-            }
+            createFolder(JMETER_TEMP_FOLDER, "temp folder", true);
         } else {
             logger.info("JMeter temp folder already exists!");
         }
 
         if (!JMETER_BIN_FOLDER.exists()) {
-            boolean success = JMETER_BIN_FOLDER.mkdirs();
-
-            if (success) {
-                logger.info("JMeter bin folder created successfully!");
-            } else {
-                logger.info("Failed to create JMeter bin folder!");
-                // Dramatic failure
-                throw new RuntimeException();
-            }
+            createFolder(JMETER_BIN_FOLDER, "bin folder", true);
         } else {
             logger.info("JMeter bin folder already exists!");
         }
 
-        if (!JMETER_TEMPLATES_FOLDER.exists()) {
-            boolean success = JMETER_TEMPLATES_FOLDER.mkdirs();
+        // Start fresh, delete the complete file structure under JMETER_REPORT_TEMPLATE
+        if (JMETER_REPORT_TEMPLATE_FOLDER.exists()) {
+            logger.info("Cleaning up JMeter report template folder");
+            ExecutorService executor = Executors.newSingleThreadExecutor();
 
-            if (success) {
-                logger.info("JMeter templates folder created successfully!");
-            } else {
-                logger.info("Failed to create JMeter templates folder!");
+            Future<?> future = executor.submit(() -> {
+                try {
+                    Files.walk(JMETER_REPORT_TEMPLATE_FOLDER.toPath()).map(Path::toFile).forEach(File::delete);
+                } catch (IOException e) {
+                    logger.error("Error cleaning up JMeter report template folder", e);
+                }
+            });
+            try {
+                future.get();
+                createFolder(JMETER_REPORT_TEMPLATE_FOLDER, "report template", false);
+            } catch (InterruptedException | ExecutionException e) {
                 // Dramatic failure
-                throw new RuntimeException();
+                new RuntimeException(e);
             }
+        } else {
+            createFolder(JMETER_REPORT_TEMPLATE_FOLDER, "report template", true);
+        }
+
+        if (!JMETER_TEMPLATES_FOLDER.exists()) {
+            createFolder(JMETER_TEMPLATES_FOLDER, "templates folder", true);
         } else {
             logger.info("JMeter templates folder already exists!");
         }
 
-        // Resuls folder is created by JMeter itself
+        // Results folder is created by JMeter itself
+    }
+
+    /**
+     * Create a folder and log the result
+     * 
+     * @param folder       The folder to create
+     * @param folderName   The name of the folder
+     * @param throwFailure If true, throw a RuntimeException if the folder creation
+     *                     fails
+     */
+    private void createFolder(File folder, String folderName, boolean throwFailure) {
+        boolean success = folder.mkdirs();
+
+        if (success) {
+            logger.info("JMeter {} folder created successfully!", folderName);
+        } else {
+            logger.info("Failed to create JMeter {} folder!", folderName);
+            // Dramatic failure
+            if (throwFailure) {
+                throw new RuntimeException();
+            }
+        }
     }
 
     /**
@@ -227,7 +282,56 @@ public class JMeterConfigurator {
                 logger.error("Error copying JMeter template file: {}", templateFile, e);
             }
         }
-
     }
 
+    /**
+     * Copy folder structure under
+     * /bin/report-template to the report-template
+     * temp folder
+     * Using {@link java.lang.ClassLoader#getResourceAsStream(String)
+     * getResourceAsStream} to ensure portability.
+     * 
+     * @see <a href=
+     *      "https://www.baeldung.com/java-classpath-resource-cannot-be-opened">How
+     *      to Avoid the Java FileNotFoundException When Loading Resources</a>
+     */
+    private void copyReportTemplateFiles() {
+
+        try {
+            Resource[] resources = new PathMatchingResourcePatternResolver()
+                    .getResources("classpath:/bin/report-template/**");
+
+            AtomicInteger count = new AtomicInteger(0);
+            for (Resource resource : resources) {
+
+                if (count.get() == 0) {
+                    // Skip the first resource, it's the bin/report-template itself
+                    count.incrementAndGet();
+                    continue;
+                }
+
+                String resourcePath = resource.getURL().toString().split("!")[1];
+                Path targetResourcePath = new File(JMETER_TEMP_FOLDER, resourcePath)
+                        .toPath();
+
+                if (resourcePath.endsWith("/")) {
+                    // This is a directory, create it in the temp folder
+                    Files.createDirectories(targetResourcePath);
+                } else {
+                    // This is a file, copy it to the temp folder
+                    try (InputStream inputStream = resource.getInputStream()) {
+                        Files.copy(inputStream,
+                                targetResourcePath,
+                                StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }
+
+            logger.info("Successfully copied report template folder structure");
+            logger.debug("Report template folder structure to: {}", JMETER_REPORT_TEMPLATE_FOLDER);
+        } catch (IOException e) {
+            logger.error("Error copying JMeter template report folder structure", e);
+        }
+
+    }
 }
