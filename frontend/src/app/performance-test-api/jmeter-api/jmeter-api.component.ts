@@ -40,7 +40,7 @@ export class JmeterApiComponent implements OnInit {
 
   selectedTest: any = null;
 
-  constructor(private performanceTestApiService: PerformanceTestApiService) {}
+  constructor(private performanceTestApiService: PerformanceTestApiService) { }
 
   ngOnInit(): void {
     this.modal = document.getElementById('myModal');
@@ -61,35 +61,36 @@ export class JmeterApiComponent implements OnInit {
     this.busy = this.performanceTestApiService
       .sendHttpJMeterRequest(this.http_request)
       .subscribe((response: any[]) => {
-        this.testResults = response.map((result) => ({
-          allThreads: result.allThreads,
-          grpThreads: result.grpThreads,
-          idleTime: result.IdleTime,
-          dataType: result.dataType,
-          connect: result.Connect,
-          label: result.label,
-          threadName: result.threadName,
-          url: result.URL,
-          responseCode: result.responseCode,
-          latency: result.Latency,
-          timestamp: result.timeStamp,
-          elapsed: result.elapsed,
-          success: result.success,
-          bytes: result.bytes,
-          responseMessage: result.responseMessage,
-          failureMessage: result.failureMessage,
-          sentBytes: result.sentBytes,
-        }));
-        if(response.length != 0){
+        /*         this.testResults = response.map((result) => ({
+                  allThreads: result.allThreads,
+                  grpThreads: result.grpThreads,
+                  idleTime: result.IdleTime,
+                  dataType: result.dataType,
+                  connect: result.Connect,
+                  label: result.label,
+                  threadName: result.threadName,
+                  url: result.URL,
+                  responseCode: result.responseCode,
+                  latency: result.Latency,
+                  timestamp: result.timeStamp,
+                  elapsed: result.elapsed,
+                  success: result.success,
+                  bytes: result.bytes,
+                  responseMessage: result.responseMessage,
+                  failureMessage: result.failureMessage,
+                  sentBytes: result.sentBytes,
+                })); */
+        this.testResults = response;
+        if (response.length != 0) {
           this.modal!.style.display = 'block';
-        }else{
+        } else {
           Swal.fire({
             icon: 'error',
             title: 'Erreur',
             text: "Le test a échoué, révisez votre configuration de test",
           })
         }
-      }, (error: any) =>{
+      }, (error: any) => {
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
@@ -102,7 +103,10 @@ export class JmeterApiComponent implements OnInit {
     this.busy = this.performanceTestApiService
       .sendFtpJMeterRequest(this.ftp_request)
       .subscribe((response: any[]) => {
-        this.testResults = response.map((result) => ({
+        this.testResults = response
+        
+        /*
+        .map((result) => ({
           allThreads: result.allThreads,
           grpThreads: result.grpThreads,
           idleTime: result.IdleTime,
@@ -121,9 +125,10 @@ export class JmeterApiComponent implements OnInit {
           failureMessage: result.failureMessage,
           sentBytes: result.sentBytes,
         }));
-        if(response.length != 0){
+        */
+        if (response.length != 0) {
           this.modal!.style.display = 'block';
-        }else{
+        } else {
           Swal.fire({
             icon: 'error',
             title: 'Erreur',
@@ -131,7 +136,7 @@ export class JmeterApiComponent implements OnInit {
           })
         }
 
-      }, (error: any) =>{
+      }, (error: any) => {
         Swal.fire({
           icon: 'error',
           title: 'Erreur',
