@@ -3,14 +3,13 @@ package ca.etsmtl.taf.performance.jmeter;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
 import ca.etsmtl.taf.performance.jmeter.model.HttpTestPlan;
+import ca.etsmtl.taf.performance.jmeter.model.JMeterResponse;
+import ca.etsmtl.taf.performance.jmeter.model.TestPlanBase;
 import ca.etsmtl.taf.performance.jmeter.utils.JMeterRunner;
 
 public class JMeterRunnerTest {
@@ -46,12 +45,12 @@ public class JMeterRunnerTest {
         testPlan.setPort("");
         testPlan.setData("");
 
-        testPlan.generateTestPlan();
-
         try {
-            List<Map<String, String>> results = JMeterRunner.executeTestPlan("http");
+            JMeterResponse response = JMeterRunner.executeTestPlanAndGenerateReport((TestPlanBase) testPlan);
 
-            assertTrue(!results.isEmpty());
+            assertTrue(response.getDetails().getContentType().equalsIgnoreCase("html"), "Content type should be 'html'"); 
+            assertTrue(response.getSummary() != null, "Summary should not be empty");           
+            assertTrue(!response.getDetails().getLocationURL().isEmpty(), "Location URL should not be empty");
 
         } catch (JMeterRunnerException e) {
             fail();

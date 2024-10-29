@@ -1,8 +1,6 @@
 package ca.etsmtl.taf.performance.jmeter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,6 +13,7 @@ import com.opencsv.exceptions.CsvException;
 
 import ca.etsmtl.taf.performance.jmeter.model.FTPTestPlan;
 import ca.etsmtl.taf.performance.jmeter.model.HttpTestPlan;
+import ca.etsmtl.taf.performance.jmeter.model.JMeterResponse;
 import ca.etsmtl.taf.performance.jmeter.model.TestPlanBase;
 import ca.etsmtl.taf.performance.jmeter.utils.JMeterRunner;
 
@@ -23,22 +22,44 @@ import ca.etsmtl.taf.performance.jmeter.utils.JMeterRunner;
 @RequestMapping("/api/performance/jmeter")
 public class JmeterController {
 
-  private ResponseEntity<?> executeTestPlan(TestPlanBase testPlan, String type) {
+  private ResponseEntity<JMeterResponse> executeTestPlan(TestPlanBase testPlan, String type) {
 
-    testPlan.generateTestPlan();
+    // List<Map<String, String>> result = null;
+    JMeterResponse jMeterResponse = new JMeterResponse("", "", null, null);
 
-    List<Map<String, String>> result = null;
     try {
-      result = JMeterRunner.executeTestPlan(type);
+      // result = JMeterRunner.executeTestPlan(type);
+      jMeterResponse = JMeterRunner.executeTestPlanAndGenerateReport(testPlan);
+      jMeterResponse.setStatus("success");
+      jMeterResponse.setMessage("Test plan executed successfully");
+      return ResponseEntity.ok().body(jMeterResponse);
     } catch (JMeterRunnerException e) {
-      return ResponseEntity.badRequest().body("Error while running JMeter test plan: " + e.getMessage());
+      jMeterResponse.setStatus("failure");
+      jMeterResponse.setMessage(e.getMessage());
+      return ResponseEntity.badRequest().body(jMeterResponse);
+    } catch (RuntimeException e) {
+      jMeterResponse.setStatus("failure");
+      jMeterResponse.setMessage(e.getMessage());
+      return ResponseEntity.internalServerError().body(jMeterResponse);
     }
-    return ResponseEntity.ok(result);
   }
 
   @PostMapping("/http")
   public ResponseEntity<?> getHttpTestPlan(@RequestBody HttpTestPlan jmeterTestPlan)
       throws IOException, CsvException {
+    if (jmeterTestPlan.getProtocol() == null) {
+      jmeterTestPlan.setProtocol("http");
+    }
+    if (jmeterTestPlan.getPort() == null) {
+      jmeterTestPlan.setPort("");
+      
+    }
+    if (jmeterTestPlan.getDuration() == null) {
+      jmeterTestPlan.setDuration("");
+    }
+    if (jmeterTestPlan.getData() == null) {
+      jmeterTestPlan.setData("");
+    }
     return executeTestPlan(jmeterTestPlan, "http");
   }
 
