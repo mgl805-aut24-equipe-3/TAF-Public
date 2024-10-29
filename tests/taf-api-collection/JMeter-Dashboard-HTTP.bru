@@ -1,11 +1,11 @@
 meta {
-  name: JMeter-TestPlan-HTTP
+  name: JMeter-Dashboard-HTTP
   type: http
-  seq: 2
+  seq: 3
 }
 
-post {
-  url: {{url}}/api/performance/jmeter/http
+get {
+  url: {{url}}/api/performance/jmeter/dashboard/results/dashboard_20241029_153537/index.html
   body: json
   auth: none
 }
@@ -15,7 +15,7 @@ body:json {
     "nbThreads": "10",
     "rampTime": "5",
     "duration": "",
-    "domain": "httpbin",
+    "domain": "httpbin.org",
     "port": "",
     "protocol": "https",
     "path": "/get",
