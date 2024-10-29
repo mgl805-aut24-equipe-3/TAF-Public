@@ -30,15 +30,14 @@ public class JmeterController {
     try {
       // result = JMeterRunner.executeTestPlan(type);
       jMeterResponse = JMeterRunner.executeTestPlanAndGenerateReport(testPlan);
-      //
+      jMeterResponse.setStatus("success");
+      jMeterResponse.setMessage("Test plan executed successfully");
       return ResponseEntity.ok().body(jMeterResponse);
     } catch (JMeterRunnerException e) {
       jMeterResponse.setStatus("failure");
       jMeterResponse.setMessage(e.getMessage());
       return ResponseEntity.badRequest().body(jMeterResponse);
     } catch (RuntimeException e) {
-      // print the stack trace
-      e.printStackTrace();
       jMeterResponse.setStatus("failure");
       jMeterResponse.setMessage(e.getMessage());
       return ResponseEntity.internalServerError().body(jMeterResponse);

@@ -25,6 +25,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.EncodedResourceResolver;
 
 /**
  * This class is responsible for performing initialization tasks of JMeter
@@ -158,8 +159,11 @@ public class JMeterConfigurator implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/performance/jmeter/report/**")
-                .addResourceLocations("file:" + JMETER_RESULTS_FOLDER.getAbsolutePath());
+        registry.addResourceHandler("/api/performance/jmeter/dashboard/**")
+                .addResourceLocations("file://" + getJmeterResultsFolder())
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new EncodedResourceResolver());
     }
 
     /**

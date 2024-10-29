@@ -1,12 +1,9 @@
 package ca.etsmtl.taf.performance.jmeter.utils;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -30,17 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
 
 import ca.etsmtl.taf.performance.jmeter.JMeterRunnerException;
 import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
 import ca.etsmtl.taf.performance.jmeter.model.JMeterResponse;
 import ca.etsmtl.taf.performance.jmeter.model.TestPlanBase;
-import ca.etsmtl.taf.performance.jmeter.provider.JmeterPathProvider;
 
 /**
  * This class is responsible for running JMeter tests and converting the results
@@ -51,77 +42,6 @@ import ca.etsmtl.taf.performance.jmeter.provider.JmeterPathProvider;
 public class JMeterRunner {
 
   private static final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
-
-  /**
-   * Run the JMeter test plan and return the path to the results file.
-   * Requires JMeter to be installed on the local system and the environment
-   * variable JMETER_INSTALL_DIR to be set.
-   * 
-   * @deprecated User {@link #executeTestPlan(String)} instead
-   * @param testType The type of test to run (e.g. http, ftp)
-   * @return The path to the results file
-   * @throws URISyntaxException
-   */
-  public static String runJMeter(String testType) throws URISyntaxException {
-
-    String jmxFilePath = new File(JMeterConfigurator.getJmeterTemplatesFolder(), "TestPlan.jmx").getAbsolutePath();
-
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-    String timestamp = dateFormat.format(new Date());
-
-    String resultsFilePath = new StringBuilder().append(JMeterConfigurator.getJmeterHome())
-        .append("results").append(System.getProperty("file.separator")).append(timestamp).append(".csv").toString();
-
-    String jmeterExecutable = new JmeterPathProvider().getJmeterJarPath();
-    try {
-      String jmeterCommand = jmeterExecutable + " -n -t " + jmxFilePath + " -l " + resultsFilePath;
-      // Run the command
-      Runtime runtime = Runtime.getRuntime();
-      Process process = runtime.exec(jmeterCommand);
-      int exitCode = process.waitFor();
-
-      // Check the exit code
-      if (exitCode == 0) {
-        return resultsFilePath;
-      } else {
-        return null;
-      }
-
-    } catch (IOException e) {
-      return null;
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      return null;
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  /**
-   * Run the JMeter test plan and return the results as a list of maps.
-   * 
-   * @param type The type of test to run (e.g. http, ftp)
-   * @return The results as a list of maps
-   * @throws JMeterRunnerException
-   */
-  public static List<Map<String, String>> executeTestPlan(String type) throws JMeterRunnerException {
-
-    List<Map<String, String>> results = null;
-    File resultsFile = getResultsFile();
-    try {
-      initializeJMeter();
-
-      runTests(resultsFile);
-
-      results = JMeterRunner.convertCSVtoJSON(resultsFile.getAbsolutePath());
-
-    } catch (IOException | CsvException | JMeterRunnerException e) {
-      throw new JMeterRunnerException(e.getMessage(), e);
-    }
-
-    return results;
-
-  }
 
   public static JMeterResponse executeTestPlanAndGenerateReport(TestPlanBase testPlan) throws JMeterRunnerException {
 
@@ -143,12 +63,14 @@ public class JMeterRunner {
           logger.info("Loading statistics file generated at {}", statisticsFile.getAbsolutePath());
         }
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> jsonData = mapper.readValue(statisticsFile, new TypeReference<Map<String, Object>>() {});
+        Map<String, Object> jsonData = mapper.readValue(statisticsFile, new TypeReference<Map<String, Object>>() {
+        });
         jMeterResponse.setSummary(jsonData);
 
         // Merge statistics and dashboarddir into a single JSON object
         jMeterResponseDetails.setContentType("html");
         jMeterResponseDetails.setLocationURL(dashboardLocation);
+        logger.debug("JMeterResponse created successfully!");
       } catch (IOException e) {
         logger.error("Error loading statistics file", e);
         throw new JMeterRunnerException(e.getMessage(), e);
@@ -250,39 +172,6 @@ public class JMeterRunner {
       logger.error("Error generating JMeter report", e);
       throw new JMeterRunnerException(e.getMessage(), e);
     }
-  }
-
-  private static List<Map<String, String>> convertCSVtoJSON(String csvFilePath)
-      throws IOException, CsvException {
-
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-    ArrayNode jsonArray = mapper.createArrayNode();
-
-    try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
-      List<String[]> csvData = reader.readAll();
-
-      String[] headers = csvData.get(0);
-
-      for (int i = 1; i < csvData.size(); i++) {
-        String[] row = csvData.get(i);
-        ObjectNode jsonObject = mapper.createObjectNode();
-
-        for (int j = 0; j < headers.length; j++) {
-          jsonObject.put(headers[j], j < row.length ? row[j] : null);
-        }
-
-        jsonArray.add(jsonObject);
-      }
-    } catch (IndexOutOfBoundsException e) {
-      // Ignore
-      logger.warn("Error parsing CSV file: {}", e.getMessage());
-    }
-
-    return mapper.convertValue(jsonArray,
-        new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, String>>>() {
-        });
   }
 
   private static class TestListener implements TestStateListener {
