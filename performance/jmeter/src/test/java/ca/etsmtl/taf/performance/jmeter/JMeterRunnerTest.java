@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import ca.etsmtl.taf.performance.jmeter.config.JMeterConfigurator;
 import ca.etsmtl.taf.performance.jmeter.model.HttpTestPlan;
+import ca.etsmtl.taf.performance.jmeter.model.JMeterResponse;
 import ca.etsmtl.taf.performance.jmeter.model.TestPlanBase;
 import ca.etsmtl.taf.performance.jmeter.utils.JMeterRunner;
 
@@ -45,9 +46,11 @@ public class JMeterRunnerTest {
         testPlan.setData("");
 
         try {
-            String dashboardLocation = JMeterRunner.executeTestPlanAndGenerateReport((TestPlanBase) testPlan);
+            JMeterResponse response = JMeterRunner.executeTestPlanAndGenerateReport((TestPlanBase) testPlan);
 
-            assertTrue(!dashboardLocation.isEmpty());
+            assertTrue(response.getDetails().getContentType().equalsIgnoreCase("html"), "Content type should be 'html'"); 
+            assertTrue(response.getSummary() != null, "Summary should not be empty");           
+            assertTrue(!response.getDetails().getLocationURL().isEmpty(), "Location URL should not be empty");
 
         } catch (JMeterRunnerException e) {
             fail();
