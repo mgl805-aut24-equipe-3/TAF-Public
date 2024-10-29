@@ -143,3 +143,11 @@ input:checked + .slider:before {
 .modal-details .modal-content {
   width: 60%; /* Réduire la largeur du deuxième modal */
 }
+
+.is-invalid {
+  border: 1px solid red;
+}
+
+.text-danger {
+  color: red;
+}

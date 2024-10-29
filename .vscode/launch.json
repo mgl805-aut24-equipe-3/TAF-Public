@@ -24,6 +24,16 @@
             "hostName": "localhost",
             "port": 5005,
             "projectName": "taf-backend"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestAutomationFrameworkApplication<backend>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ca.etsmtl.taf.TestAutomationFrameworkApplication",
+            "projectName": "backend",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
