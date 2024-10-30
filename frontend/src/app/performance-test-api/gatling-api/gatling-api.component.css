@@ -166,3 +166,16 @@
     flex: 0 0 100%;
   }
 }
+
+.required-star {
+  color: red;
+  margin-left: 2px;
+}
+
+.is-invalid {
+  border: 1px solid red;
+}
+
+.text-danger {
+  color: red;
+}
