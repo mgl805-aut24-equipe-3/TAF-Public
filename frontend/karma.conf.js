@@ -51,7 +51,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: [isCI ? 'ChromeHeadless', 'Chrome'],
+    browsers: [isCI ? 'ChromeHeadless': 'Chrome'],
     singleRun: isCI, // On CI, ensure the runner exits in CI after tests complete
     restartOnFileChange: true
   });
