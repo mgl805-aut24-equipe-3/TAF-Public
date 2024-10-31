@@ -14,18 +14,12 @@ import java.io.File;
 
 @Component
 public class GatlingConfigurator implements WebMvcConfigurer {
+    private static final Logger logger = LoggerFactory.getLogger(GatlingConfigurator.class); //Pour les logs
 
-    private static final Logger logger = LoggerFactory.getLogger(GatlingConfigurator.class);
     //private static final File SYSTEM_TEMP_FOLDER = new File(System.getProperty("java.io.tmpdir"));
     //private static final File GATLING_RESULTS_FOLDER = new File(SYSTEM_TEMP_FOLDER, "gatling-results");
     private static final File GATLING_RESULTS_FOLDER = new File("results");
 
-    /**
-     * Get the path to the Gatling results folder used during runtime.
-     * This is where Gatling will store the results of the test runs.
-     * 
-     * @return The path
-     */
     public static String getGatlingResultsFolder() {
         return GATLING_RESULTS_FOLDER.getAbsolutePath();
     }
@@ -33,34 +27,57 @@ public class GatlingConfigurator implements WebMvcConfigurer {
     @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
         createGatlingResultsFolder();
+        //logFolderContent();
     }
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        String resourceLocation = "file://" + getGatlingResultsFolder();
-        logger.info("Ajout du gestionnaire de ressources pour: " + resourceLocation);
-
+        String resourceLocation = "file:" + getGatlingResultsFolder() + "/";
+        logger.info("Configuration du gestionnaire de ressources pour: {}", resourceLocation); //Pour les logs
+        
         registry.addResourceHandler("/api/performance/gatling/results/**")
-                .addResourceLocations(resourceLocation)
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new EncodedResourceResolver());
+               .addResourceLocations(resourceLocation)
+               .setCachePeriod(3600)  // Cache les ressources pendant 1 heure
+               .resourceChain(true)  // Active la chaîne de ressources
+               .addResolver(new EncodedResourceResolver());
     }
 
-    /**
-     * Create the folder that Gatling requires at runtime.
-     */
     private void createGatlingResultsFolder() {
         if (!GATLING_RESULTS_FOLDER.exists()) {
             boolean success = GATLING_RESULTS_FOLDER.mkdirs();
             if (success) {
-                logger.info("Gatling results folder created successfully at: " + GATLING_RESULTS_FOLDER.getAbsolutePath());
+                logger.info("Dossier de résultats Gatling créé avec succès : {}", //Pour les logs
+                    GATLING_RESULTS_FOLDER.getAbsolutePath());
             } else {
-                logger.error("Failed to create Gatling results folder at: " + GATLING_RESULTS_FOLDER.getAbsolutePath());
-                throw new RuntimeException("Failed to create Gatling results folder!");
+                logger.error("Impossible de créer le dossier de résultats Gatling : {}", //Pour les logs
+                    GATLING_RESULTS_FOLDER.getAbsolutePath());
+                throw new RuntimeException("Échec de la création du dossier de résultats Gatling!");
             }
         } else {
-            logger.info("Gatling results folder already exists at: " + GATLING_RESULTS_FOLDER.getAbsolutePath());
+            logger.info("Le dossier de résultats Gatling existe déjà : {}", //Pour les logs
+                GATLING_RESULTS_FOLDER.getAbsolutePath());
         }
     }
+
+    // Aide pour le débogage
+    // private void logFolderContent() {
+    //     File[] files = GATLING_RESULTS_FOLDER.listFiles();
+    //     if (files != null) {
+    //         logger.info("Contenu du dossier de résultats Gatling :");
+    //         for (File file : files) {
+    //             logger.info(" - {} ({})", file.getName(), 
+    //                 file.isDirectory() ? "dossier" : "fichier");
+    //             if (file.isDirectory()) {
+    //                 File[] subFiles = file.listFiles();
+    //                 if (subFiles != null) {
+    //                     for (File subFile : subFiles) {
+    //                         logger.info("   └── {}", subFile.getName());
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         logger.warn("Impossible de lister le contenu du dossier de résultats Gatling");
+    //     }
+    // }
 }
