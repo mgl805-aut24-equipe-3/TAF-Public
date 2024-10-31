@@ -2,6 +2,10 @@
 
 import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { NgBusyModule } from 'ng-busy';
+
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
@@ -24,3 +28,9 @@ getTestBed().initTestEnvironment(
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().map(context);
+
+beforeEach(() => {
+  getTestBed().configureTestingModule({
+    imports: [MatIconModule, FormsModule, NgBusyModule],
+  });
+});
