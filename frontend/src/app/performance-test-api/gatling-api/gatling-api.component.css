@@ -125,10 +125,21 @@
 }
 
 .modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre horizontalement */
+  justify-content: center; /* Centre verticalement */
   padding: 2px 16px;
   max-height: 400px;
   overflow-y: auto;
+  text-align: center; /* Centre le texte */
 }
+
+.modal-body p {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 
 .modal-footer {
   padding: 20px;
@@ -138,20 +149,14 @@
   border-bottom-right-radius: 10px;
 }
 
-.test-result {
-  display: flex;
-  align-items: center;
+.result-icon {
+  font-size: 2em;
   margin-bottom: 10px;
 }
-
-.test-result-icon {
-  margin-right: 10px;
-  font-size: 1.5em;
-}
-
 .success {
   color: green;
 }
+
 
 
 .error {

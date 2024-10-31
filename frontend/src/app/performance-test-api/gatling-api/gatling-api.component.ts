@@ -44,11 +44,22 @@ export class GatlingApiComponent implements OnInit {
         const matches: String[] = Array.from(response.message.matchAll(pattern));
         const arrayOfStrings = matches.map(match => match[0]);
   
-        // Détermination du succès ou de l'échec pour chaque message
-        this.testResult = arrayOfStrings.map(message => ({
-          message,
-          success: message.includes('OK') // Utilisation de 'OK' pour indiquer le succès (On check la présence de 'OK' dans le message)
-        }));
+        // Filtrer les messages pour ne conserver que ceux indiquant le succès ou l'échec global
+        const successMessage = arrayOfStrings.find(message => message.includes('request count'));
+        const reportGeneratedMessage = arrayOfStrings.find(message => message.includes('Generated Report'));
+  
+        // Détermination du succès ou de l'échec global
+        this.testResult = [{
+          success: !!successMessage
+        }];
+  
+        // Ajouter un message indiquant que le rapport a été généré
+        if (reportGeneratedMessage) {
+          this.testResult.push({
+            message: 'Le rapport a été généré avec succès.',
+            success: true
+          });
+        }
   
       }, (error: any) => {
         Swal.fire({
