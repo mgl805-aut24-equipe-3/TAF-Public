@@ -51,6 +51,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Install Chrome Headless
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
       - name: Install dependencies
         working-directory: ./frontend
         run: npm install
