@@ -1,8 +1,8 @@
-package ca.etsmtl.taf.entity;
+package ca.etsmtl.taf.performance.gatling.entity;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-public class GatlingRequest {
+public class GatlingTestRequest {
     @JsonAlias("testBaseUrl")
     private String baseUrl;
     @JsonAlias("testScenarioName")

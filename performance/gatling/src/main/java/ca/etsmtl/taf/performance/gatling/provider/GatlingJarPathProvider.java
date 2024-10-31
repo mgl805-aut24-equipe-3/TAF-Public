@@ -1,4 +1,4 @@
-package ca.etsmtl.taf.provider;
+package ca.etsmtl.taf.performance.gatling.provider;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,7 +12,7 @@ public class GatlingJarPathProvider {
         Path parentDirectory = backendDirectory.getParent();
 
         //Construire le chemin vers le Gatling JAR
-        File gatlingJar = parentDirectory.resolve("performance").resolve("gatling").resolve("target").resolve("taf-performance-gatling-1.0.0-SNAPSHOT-jar-with-dependencies.jar").toFile();
+        File gatlingJar = parentDirectory.resolve("gatling").resolve("target").resolve("taf-performance-gatling-1.0.0-SNAPSHOT-jar-with-dependencies.jar").toFile();
         if (gatlingJar.exists()) {
             return gatlingJar.getAbsolutePath();
         } else {

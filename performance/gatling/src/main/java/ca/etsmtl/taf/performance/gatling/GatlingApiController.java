@@ -1,4 +1,4 @@
-package ca.etsmtl.taf.controller;
+package ca.etsmtl.taf.performance.gatling;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,10 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.etsmtl.Main;
-import ca.etsmtl.taf.config.GatlingConfigurator;
-import ca.etsmtl.taf.entity.GatlingRequest;
-import ca.etsmtl.taf.payload.response.MessageResponse;
+import ca.etsmtl.taf.performance.gatling.payload.response.MessageResponse;
+import ca.etsmtl.taf.performance.gatling.entity.GatlingTestRequest;
+import ca.etsmtl.taf.performance.gatling.provider.GatlingJarPathProvider;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -50,7 +49,7 @@ public class GatlingApiController {
      * @return
      */
     @PostMapping(value = "/runSimulation")
-    public ResponseEntity<MessageResponse> runSimulation(@RequestBody GatlingRequest gatlingRequest) {
+    public ResponseEntity<MessageResponse> runSimulation(@RequestBody GatlingTestRequest gatlingRequest) {
         try {
 
             // Convert GatlingRequest to JSON String
