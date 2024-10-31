@@ -149,8 +149,13 @@
   font-size: 1.5em;
 }
 
-.test-result-success {
-  color: #5cb85c;
+.success {
+  color: green;
+}
+
+
+.error {
+  color: red;
 }
 
 .test-result-failure {
