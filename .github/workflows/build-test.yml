@@ -10,17 +10,25 @@ name: Build and test
 
 on:
   push:
-    branches: [ "ci/*", "feature/*" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "develop", "main" ]
+    branches:
+      - develop
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+    paths:
+      - backend/**
+      - performance/**
+      - frontend/**
 
 jobs:
   package_backend:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
@@ -30,27 +38,22 @@ jobs:
     - name: Build and test with Maven
       run: mvn -B package --file pom.xml
     - name: Upload .jar file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: TAF package
-        path: backend/target/backend-1.0.0-SNAPSHOT.jar
+        name: TAF backend package
+        path: backend/target/taf-backend-1.0.0-SNAPSHOT.jar
   
   build_frontend:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '21'
+          node-version: '20'
       - name: Install dependencies
         working-directory: ./frontend
         run: npm install
-
       - name: Build
         working-directory: ./frontend
         run: npm run ng build
-
-
