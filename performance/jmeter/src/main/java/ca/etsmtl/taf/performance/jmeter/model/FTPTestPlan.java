@@ -45,6 +45,7 @@ public class FTPTestPlan extends TestPlanBase {
   public FTPTestPlan() {
   }
 
+  @SuppressWarnings("java:S107")
   public FTPTestPlan(String nbThreads, String rampTime, String duration,
                      String domain, String port, String remotefile, String localfile,
                      String method, String username, String password) {
