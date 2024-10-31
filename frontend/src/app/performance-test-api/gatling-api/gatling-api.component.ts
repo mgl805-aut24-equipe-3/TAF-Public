@@ -125,4 +125,9 @@ export class GatlingApiComponent implements OnInit {
       console.error("modal is not initialized");
     }
   }
+
+  newTest() {
+    this.request = new GatlingRequest(); 
+    this.closeModal();
+  }
 }
