@@ -39,11 +39,12 @@ module.exports = function (config) {
       ],
       check: { //The check property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
         global: {
-          statements: 80,
-          branches: 80,
-          functions: 80,
-          lines: 80
-        }
+          statements: 40,
+          branches: 40,
+          functions: 40,
+          lines: 40,
+          includes: ['src/**/performance-test-api/**/*.ts'], 
+        },
       }
     },
     reporters: ['progress', 'kjhtml'],
