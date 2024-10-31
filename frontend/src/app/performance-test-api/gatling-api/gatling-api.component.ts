@@ -61,20 +61,29 @@ export class GatlingApiComponent implements OnInit {
 
   // Nouvelle méthode pour afficher le dernier rapport
   showLatestReport() {
-    this.performanceTestApiService.getLatestReport().subscribe(
-      (reportContent: string) => {
-        this.latestReportContent = this.sanitizer.bypassSecurityTrustHtml(reportContent);
-        console.log("Latest report content:", this.latestReportContent); // Ajout de log pour vérifier le contenu
-        this.openReportModal();
-      },
-      (error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: "Impossible de récupérer le dernier rapport.",
-        });
-      }
-    );
+    const reportWindow = window.open('', '_blank');
+    if (reportWindow) {
+      this.performanceTestApiService.getLatestReport().subscribe(
+        (reportContent: string) => {
+          reportWindow.document.write(reportContent);
+          reportWindow.document.close();
+        },
+        (error: any) => {
+          reportWindow.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: "Impossible de récupérer le dernier rapport.",
+          });
+        }
+      );
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: "Impossible d'ouvrir un nouvel onglet pour afficher le rapport.",
+      });
+    }
   }
 
   openReportModal() {
