@@ -47,10 +47,11 @@ describe('AppComponent', () => {
    */
   it('devrait appeler signOut et recharger la page lors de l\'appel de logout', () => {
     spyOn(window.location, 'reload');
+    const reloadSpy = spyOn(window.location, 'reload').and.callFake(() => {});
 
     component.logout();
 
     expect(tokenStorageService.signOut).toHaveBeenCalled();
-    expect(window.location.reload).toHaveBeenCalled();
+    expect(reloadSpy).toHaveBeenCalled();
   });
 });

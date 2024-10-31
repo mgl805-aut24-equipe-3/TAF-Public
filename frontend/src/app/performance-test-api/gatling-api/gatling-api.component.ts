@@ -41,7 +41,7 @@ export class GatlingApiComponent implements OnInit {
   
         // Extraction des messages de la réponse de l'API
         const pattern = /(.+)\n?/g;
-        const matches: String[] = Array.from(response.message.matchAll(pattern));
+        const matches: string[] = Array.from(response.message?.matchAll(pattern));
         const arrayOfStrings = matches.map(match => match[0]);
   
         // Filtrer les messages pour ne conserver que ceux indiquant le succès ou l'échec global
