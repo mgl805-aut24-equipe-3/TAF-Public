@@ -1,9 +1,8 @@
 package ca.etsmtl.taf.performance.jmeter.model;
 
-import java.util.List;
-import java.util.Map;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
