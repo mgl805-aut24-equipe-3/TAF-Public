@@ -39,7 +39,7 @@ import ca.etsmtl.taf.performance.gatling.provider.GatlingJarPathProvider;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/gatling")
+@RequestMapping("/api/performance/gatling")
 public class GatlingApiController {
 
     private static final Logger logger = LoggerFactory.getLogger(GatlingApiController.class);
