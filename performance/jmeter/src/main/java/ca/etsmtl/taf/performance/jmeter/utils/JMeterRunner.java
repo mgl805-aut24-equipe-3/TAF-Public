@@ -43,6 +43,10 @@ public class JMeterRunner {
 
   private static final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
 
+  private JMeterRunner() {
+    throw new IllegalStateException("Utility class");
+  }
+
   public static JMeterResponse executeTestPlanAndGenerateReport(TestPlanBase testPlan) throws JMeterRunnerException {
 
     JMeterResponse jMeterResponse = new JMeterResponse("", "", null, null);
@@ -56,25 +60,7 @@ public class JMeterRunner {
 
       String dashboardLocation = runTests(resultsFile);
 
-      try {
-        // Load statistics.json from the dashboardDir folder and deserialize
-        File statisticsFile = new File(dashboardLocation, "statistics.json");
-        if (statisticsFile.exists()) {
-          logger.info("Loading statistics file generated at {}", statisticsFile.getAbsolutePath());
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> jsonData = mapper.readValue(statisticsFile, new TypeReference<Map<String, Object>>() {
-        });
-        jMeterResponse.setSummary(jsonData);
-
-        // Merge statistics and dashboarddir into a single JSON object
-        jMeterResponseDetails.setContentType("html");
-        jMeterResponseDetails.setLocationURL(dashboardLocation);
-        logger.debug("JMeterResponse created successfully!");
-      } catch (IOException e) {
-        logger.error("Error loading statistics file", e);
-        throw new JMeterRunnerException(e.getMessage(), e);
-      }
+      populateResponse(jMeterResponse, jMeterResponseDetails, dashboardLocation);
 
     } catch (JMeterRunnerException e) {
       throw new JMeterRunnerException(e.getMessage(), e);
@@ -84,7 +70,32 @@ public class JMeterRunner {
 
   }
 
-  private static final File getTestPlan() throws JMeterRunnerException {
+  @SuppressWarnings("java:S2139")
+  private static void populateResponse(JMeterResponse jMeterResponse,
+      JMeterResponse.JMeterResponseDetails jMeterResponseDetails, String dashboardLocation)
+      throws JMeterRunnerException {
+    try {
+      // Load statistics.json from the dashboardDir folder and deserialize
+      File statisticsFile = new File(dashboardLocation, "statistics.json");
+      if (statisticsFile.exists()) {
+        logger.info("Loading statistics file generated at {}", statisticsFile.getAbsolutePath());
+      }
+      ObjectMapper mapper = new ObjectMapper();
+      Map<String, Object> jsonData = mapper.readValue(statisticsFile, new TypeReference<Map<String, Object>>() {
+      });
+      jMeterResponse.setSummary(jsonData);
+
+      // Merge statistics and dashboarddir into a single JSON object
+      jMeterResponseDetails.setContentType("html");
+      jMeterResponseDetails.setLocationURL(dashboardLocation);
+      logger.debug("JMeterResponse created successfully!");
+    } catch (IOException e) {
+      logger.error("Error loading statistics file", e);
+      throw new JMeterRunnerException(e.getMessage(), e);
+    }
+  }
+
+  private static final File getTestPlan() {
     File jmxFilePath = new File(JMeterConfigurator.getJmeterTemplatesFolder(), "TestPlan.jmx");
     logger.info("Using Test Plan {}", jmxFilePath);
 
@@ -118,6 +129,7 @@ public class JMeterRunner {
 
   }
 
+  @SuppressWarnings("java:S2139")
   private static String runTests(File resultsFile) throws JMeterRunnerException {
 
     try {

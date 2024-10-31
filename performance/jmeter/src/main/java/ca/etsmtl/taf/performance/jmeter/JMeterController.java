@@ -1,15 +1,11 @@
 package ca.etsmtl.taf.performance.jmeter;
 
-import java.io.IOException;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.opencsv.exceptions.CsvException;
 
 import ca.etsmtl.taf.performance.jmeter.model.FTPTestPlan;
 import ca.etsmtl.taf.performance.jmeter.model.HttpTestPlan;
@@ -22,13 +18,11 @@ import ca.etsmtl.taf.performance.jmeter.utils.JMeterRunner;
 @RequestMapping("/api/performance/jmeter")
 public class JMeterController {
 
-  private ResponseEntity<JMeterResponse> executeTestPlan(TestPlanBase testPlan, String type) {
+  private ResponseEntity<JMeterResponse> executeTestPlan(TestPlanBase testPlan) {
 
-    // List<Map<String, String>> result = null;
     JMeterResponse jMeterResponse = new JMeterResponse("", "", null, null);
 
     try {
-      // result = JMeterRunner.executeTestPlan(type);
       jMeterResponse = JMeterRunner.executeTestPlanAndGenerateReport(testPlan);
       jMeterResponse.setStatus("success");
       jMeterResponse.setMessage("Test plan executed successfully");
@@ -45,8 +39,7 @@ public class JMeterController {
   }
 
   @PostMapping("/http")
-  public ResponseEntity<?> getHttpTestPlan(@RequestBody HttpTestPlan jmeterTestPlan)
-      throws IOException, CsvException {
+  public ResponseEntity<JMeterResponse> getHttpTestPlan(@RequestBody HttpTestPlan jmeterTestPlan) {
     if (jmeterTestPlan.getProtocol() == null) {
       jmeterTestPlan.setProtocol("http");
     }
@@ -60,11 +53,11 @@ public class JMeterController {
     if (jmeterTestPlan.getData() == null) {
       jmeterTestPlan.setData("");
     }
-    return executeTestPlan(jmeterTestPlan, "http");
+    return executeTestPlan(jmeterTestPlan);
   }
 
   @PostMapping("/ftp")
-  public ResponseEntity<?> getFtpTestplan(@RequestBody FTPTestPlan ftpTestPlan) throws IOException, CsvException {
-    return executeTestPlan(ftpTestPlan, "ftp");
+  public ResponseEntity<JMeterResponse> getFtpTestplan(@RequestBody FTPTestPlan ftpTestPlan) {
+    return executeTestPlan(ftpTestPlan);
   }
 }
