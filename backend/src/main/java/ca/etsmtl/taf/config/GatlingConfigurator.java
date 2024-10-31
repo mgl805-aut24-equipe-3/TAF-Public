@@ -16,9 +16,13 @@ import java.io.File;
 public class GatlingConfigurator implements WebMvcConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(GatlingConfigurator.class); //Pour les logs
 
+    //A decommenter si on veut utiliser le dossier temporaire du système et aussi pour gatling.resultsFolder du fichier gatling.conf, comment s'y prendre pour le coter temporaire doit-on juste le retirer ???? 
+
     //private static final File SYSTEM_TEMP_FOLDER = new File(System.getProperty("java.io.tmpdir"));
     //private static final File GATLING_RESULTS_FOLDER = new File(SYSTEM_TEMP_FOLDER, "gatling-results");
-    private static final File GATLING_RESULTS_FOLDER = new File("results");
+
+    private static final File GATLING_RESULTS_FOLDER = new File(System.getProperty("user.dir"), "results"); //Pour respecter le chemin de la propriété gatling.resultsFolder 
+    //private static final File GATLING_RESULTS_FOLDER = new File("results");
 
     public static String getGatlingResultsFolder() {
         return GATLING_RESULTS_FOLDER.getAbsolutePath();
