@@ -48,7 +48,7 @@ describe('GatlingApiComponent', () => {
    * Test pour vérifier que la méthode onSubmit appelle sendGatlingRequest.
    */
   it('devrait appeler sendGatlingRequest lors de l\'appel de onSubmit', () => {
-    const mockResponse = { success: true };
+    const mockResponse = { message: 'OK' };
     performanceTestApiService.sendGatlingRequest.and.returnValue(of(mockResponse));
 
     component.onSubmit();
