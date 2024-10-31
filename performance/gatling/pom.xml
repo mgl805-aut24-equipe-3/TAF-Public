@@ -4,9 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ca.etsmtl</groupId>
-    <artifactId>gatling</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>ca.etsmtl</groupId>
+        <artifactId>taf-performance</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <artifactId>taf-performance-gatling</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Test Automation Framework - Performance/Gatling </name>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>17</java.version>
@@ -16,8 +24,15 @@
         <gatling-maven-plugin.version>4.2.9</gatling-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    <!-- Gatling dependencies -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
@@ -55,6 +70,7 @@
             <version>3.9.1</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -63,7 +79,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ca.etsmtl.Main</mainClass>
+                            <mainClass>ca.etsmtl.taf.performance.gatling.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -104,6 +120,11 @@
                     <source>11</source>
                     <target>11</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
             </plugin>
         </plugins>
     </build>
