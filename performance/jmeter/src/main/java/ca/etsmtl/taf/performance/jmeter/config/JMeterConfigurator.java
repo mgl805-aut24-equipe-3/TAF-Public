@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 
 /**
  * This class is responsible for performing initialization tasks of JMeter
@@ -159,11 +161,12 @@ public class JMeterConfigurator implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/performance/jmeter/dashboard/**")
-                .addResourceLocations("file://" + getJmeterResultsFolder())
+        registry.addResourceHandler("/reports/performance/jmeter/dashboard/**")
+                .addResourceLocations(JMETER_RESULTS_FOLDER.toPath().toUri().toString())
                 .setCachePeriod(3600)
                 .resourceChain(true)
-                .addResolver(new EncodedResourceResolver());
+                .addResolver(new EncodedResourceResolver())
+                .addResolver(new PathResourceResolver());
     }
 
     /**
@@ -316,7 +319,7 @@ public class JMeterConfigurator implements WebMvcConfigurer {
 
                 String resourcePathParts[] = resource.getURL().toString().split("!");
                 String resourcePath = resourcePathParts[resourcePathParts.length - 1];
-                
+
                 Path targetResourcePath = new File(JMETER_TEMP_FOLDER, resourcePath)
                         .toPath();
 
