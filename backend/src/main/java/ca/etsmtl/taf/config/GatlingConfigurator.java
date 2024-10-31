@@ -35,10 +35,10 @@ public class GatlingConfigurator implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        String resourceLocation = "file:" + getGatlingResultsFolder() + "/";
+        String resourceLocation = GATLING_RESULTS_FOLDER.toPath().toUri().toString()  + "/";  
         logger.info("Configuration du gestionnaire de ressources pour: {}", resourceLocation); //Pour les logs
         
-        registry.addResourceHandler("/api/performance/gatling/results/**")
+        registry.addResourceHandler("/reports/performance/gatling/dashboard/**")
                .addResourceLocations(resourceLocation)
                .setCachePeriod(3600)  // Cache les ressources pendant 1 heure
                .resourceChain(true)  // Active la chaîne de ressources
