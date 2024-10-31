@@ -1,9 +1,12 @@
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
-
 import 'zone.js/testing';
+
+import { HttpClientModule } from '@angular/common/http';
 import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 import { NgBusyModule } from 'ng-busy';
 
 import {
@@ -31,6 +34,6 @@ context.keys().map(context);
 
 beforeEach(() => {
   getTestBed().configureTestingModule({
-    imports: [MatIconModule, FormsModule, NgBusyModule],
+    imports: [FormsModule, HttpClientModule, MatDialogModule, MatIconModule, NgBusyModule, ReactiveFormsModule, RouterTestingModule],
   });
 });
