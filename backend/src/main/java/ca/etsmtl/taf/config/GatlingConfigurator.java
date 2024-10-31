@@ -22,7 +22,6 @@ public class GatlingConfigurator implements WebMvcConfigurer {
     //private static final File GATLING_RESULTS_FOLDER = new File(SYSTEM_TEMP_FOLDER, "gatling-results");
 
     private static final File GATLING_RESULTS_FOLDER = new File(System.getProperty("user.dir"), "results"); //Pour respecter le chemin de la propriété gatling.resultsFolder 
-    //private static final File GATLING_RESULTS_FOLDER = new File("results");
 
     public static String getGatlingResultsFolder() {
         return GATLING_RESULTS_FOLDER.getAbsolutePath();
