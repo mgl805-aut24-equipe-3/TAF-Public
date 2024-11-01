@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
 import Swal from 'sweetalert2';
 import { GatlingRequest } from './gatling-request';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-gatling-api',
@@ -25,7 +24,7 @@ export class GatlingApiComponent implements OnInit {
   request: GatlingRequest = new GatlingRequest();
 
   constructor(
-    private performanceTestApiService: PerformanceTestApiService,
+    private readonly performanceTestApiService: PerformanceTestApiService,
     private sanitizer: DomSanitizer
   ) { }
 
