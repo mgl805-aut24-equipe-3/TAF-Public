@@ -4,6 +4,7 @@ import { PerformanceTestApiService } from 'src/app/_services/performance-test-ap
 import Swal from 'sweetalert2';
 import { GatlingRequest } from './gatling-request';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment'; // Ajout de l'importation
 
 @Component({
   selector: 'app-gatling-api',
@@ -70,31 +71,9 @@ export class GatlingApiComponent implements OnInit {
       });
   }
 
-  // Nouvelle méthode pour afficher le dernier rapport
+  //  Afficher le dernier rapport
   showLatestReport() {
-    const reportWindow = window.open('', '_blank');
-    if (reportWindow) {
-      this.performanceTestApiService.getLatestReport().subscribe(
-        (reportContent: string) => {
-          reportWindow.document.write(reportContent);
-          reportWindow.document.close();
-        },
-        (error: any) => {
-          reportWindow.close();
-          Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: "Impossible de récupérer le dernier rapport.",
-          });
-        }
-      );
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: "Impossible d'ouvrir un nouvel onglet pour afficher le rapport.",
-      });
-    }
+    window.open(`${environment.apiUrl}/api/gatling/latest-report`, '_blank');
   }
 
   openReportModal() {
