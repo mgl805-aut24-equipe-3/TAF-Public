@@ -24,8 +24,6 @@ describe('GatlingApiComponent', () => {
       ]
     })
     .compileComponents();
-
-    performanceTestApiService = TestBed.inject(PerformanceTestApiService) as jasmine.SpyObj<PerformanceTestApiService>;
   });
 
   /**
@@ -34,6 +32,7 @@ describe('GatlingApiComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GatlingApiComponent);
     component = fixture.componentInstance;
+    performanceTestApiService = TestBed.inject(PerformanceTestApiService) as jasmine.SpyObj<PerformanceTestApiService>;
     fixture.detectChanges();
   });
 
@@ -48,9 +47,10 @@ describe('GatlingApiComponent', () => {
    * Test pour vérifier que la méthode onSubmit appelle sendGatlingRequest.
    */
   it('devrait appeler sendGatlingRequest lors de l\'appel de onSubmit', () => {
-    const mockResponse = { message: 'OK' };
+    spyOn(component, 'validateForm').and.returnValue(true);
+    const mockResponse = { message: 'request count: 1\nGenerated Report' };
     performanceTestApiService.sendGatlingRequest.and.returnValue(of(mockResponse));
-
+  
     component.onSubmit();
 
     expect(performanceTestApiService.sendGatlingRequest).toHaveBeenCalled();
