@@ -106,31 +106,9 @@ export class GatlingApiComponent implements OnInit {
       });
   }
 
-  // Nouvelle méthode pour afficher le dernier rapport
+  //  Afficher le dernier rapport
   showLatestReport() {
     const reportWindow = window.open(this.performanceTestApiService.getLatestReportUrl().toString(), '_blank');
-    // if (reportWindow) {
-    //   this.performanceTestApiService.getLatestReport().subscribe(
-    //     (reportContent: string) => {
-    //       reportWindow.document.write(reportContent);
-    //       reportWindow.document.close();
-    //     },
-    //     (error: any) => {
-    //       reportWindow.close();
-    //       Swal.fire({
-    //         icon: 'error',
-    //         title: 'Erreur',
-    //         text: "Impossible de récupérer le dernier rapport.",
-    //       });
-    //     }
-    //   );
-    // } else {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Erreur',
-    //     text: "Impossible d'ouvrir un nouvel onglet pour afficher le rapport.",
-    //   });
-    // }
   }
 
   openReportModal() {

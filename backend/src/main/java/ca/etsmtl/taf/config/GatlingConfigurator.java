@@ -11,6 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 
 @Component
 public class GatlingConfigurator implements WebMvcConfigurer {
@@ -23,6 +25,8 @@ public class GatlingConfigurator implements WebMvcConfigurer {
 
     private static final File GATLING_RESULTS_FOLDER = new File(System.getProperty("user.dir"), "results"); //Pour respecter le chemin de la propriété gatling.resultsFolder 
 
+    private volatile String latestReportPath; // Cache du chemin du dernier rapport
+
     public static String getGatlingResultsFolder() {
         return GATLING_RESULTS_FOLDER.getAbsolutePath();
     }
@@ -30,6 +34,7 @@ public class GatlingConfigurator implements WebMvcConfigurer {
     @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
         createGatlingResultsFolder();
+        updateLatestReportPath();
         //logFolderContent();
     }
 
@@ -60,6 +65,33 @@ public class GatlingConfigurator implements WebMvcConfigurer {
             logger.info("Le dossier de résultats Gatling existe déjà : {}", //Pour les logs
                 GATLING_RESULTS_FOLDER.getAbsolutePath());
         }
+    }
+
+    private void updateLatestReportPath() {
+        try {
+            File[] reportDirs = GATLING_RESULTS_FOLDER.listFiles(file -> 
+                file.isDirectory() && new File(file, "index.html").exists());
+                
+            if (reportDirs != null && reportDirs.length > 0) {
+                File latestReport = Arrays.stream(reportDirs)
+                    .max(Comparator.comparingLong(File::lastModified))
+                    .orElse(null);
+                
+                if (latestReport != null) {
+                    this.latestReportPath = latestReport.getName();
+                    logger.info("Nouveau rapport le plus récent détecté : {}", this.latestReportPath);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Erreur lors de la mise à jour du chemin du dernier rapport", e);
+        }
+    }
+
+    public String getLatestReportPath() {
+        if (latestReportPath == null) {
+            updateLatestReportPath();
+        }
+        return latestReportPath; // Renvoie uniquement le nom du dossier
     }
 
     // Aide pour le débogage

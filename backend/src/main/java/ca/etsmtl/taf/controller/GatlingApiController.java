@@ -167,27 +167,7 @@ public class GatlingApiController {
                             URI.create("/reports/performance/gatling/dashboard/" + latestReportDir.getName() + "/index.html"));
                     return new ResponseEntity<>(headers, HttpStatus.FOUND);
 
-                    // Lire le contenu du fichier HTML
-                    // StringBuilder htmlContent = new StringBuilder();
-                    // try (BufferedReader reader = new BufferedReader(
-                    // new InputStreamReader(new FileInputStream(reportFile)))) {
-                    // String line;
-                    // while ((line = reader.readLine()) != null) {
-                    // htmlContent.append(line).append("\n");
-                    // }
-                    // }
-
-                    // String reportHtml = htmlContent.toString()
-                    // .replace("href=\"",
-                    // "href=\"http://localhost:8083/api/performance/gatling/results/"
-                    // + latestReportDir.getName() + "/")
-                    // .replace("src=\"",
-                    // "src=\"http://localhost:8083/api/performance/gatling/results/"
-                    // + latestReportDir.getName() + "/");
-
-                    // return ResponseEntity.ok()
-                    // .contentType(MediaType.TEXT_HTML)
-                    // .body(reportHtml);
+                    
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND)
                             .body("Aucun rapport trouvé dans le dernier répertoire.");
