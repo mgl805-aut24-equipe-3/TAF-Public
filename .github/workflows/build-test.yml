@@ -25,7 +25,7 @@ on:
       - frontend/**
 
 jobs:
-  package_backend:
+  backend:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -36,14 +36,15 @@ jobs:
         distribution: 'sapmachine'
         cache: maven
     - name: Build and test with Maven
-      run: mvn -B package --file pom.xml
-    - name: Upload .jar file
-      uses: actions/upload-artifact@v4
-      with:
-        name: TAF backend package
-        path: backend/target/taf-backend-1.0.0-SNAPSHOT.jar
+      run: mvn clean install
+    # For now, the backend jar is not reused in subsequent steps
+    # - name: Upload .jar file
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: TAF backend package
+    #     path: backend/target/taf-backend-1.0.0-SNAPSHOT.jar
   
-  build_frontend:
+  frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
