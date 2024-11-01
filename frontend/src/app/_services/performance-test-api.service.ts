@@ -31,9 +31,9 @@ export class PerformanceTestApiService {
     return response;
   }
 
-  getLatestReport(): Observable<string> {
+  getLatestReportUrl(): URL {
     // Appelle l'API pour récupérer le contenu du dernier rapport Gatling
-    return this.http.get(LATEST_REPORT_API, { responseType: 'text' });
+    return new URL(LATEST_REPORT_API);
   }
   
   sendHttpJMeterRequest(
