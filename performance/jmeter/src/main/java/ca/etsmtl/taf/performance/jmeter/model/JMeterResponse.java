@@ -1,9 +1,8 @@
 package ca.etsmtl.taf.performance.jmeter.model;
 
-import java.util.List;
-import java.util.Map;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -87,7 +86,8 @@ public class JMeterResponse {
 
             Path dashboardPath = new File(JMeterConfigurator.getJmeterResultsFolder()).toPath()
                     .relativize(new File(url).toPath());
-            this.locationURL = "/api/performance/jmeter/dashboard/results/" + dashboardPath.toString() + "/index.html";
+            this.locationURL = "/reports/performance/jmeter/dashboard/" + dashboardPath.toString()
+                    + "/index.html";
         }
 
     }

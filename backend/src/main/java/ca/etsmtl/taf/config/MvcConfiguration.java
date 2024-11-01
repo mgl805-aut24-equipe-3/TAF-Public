@@ -13,7 +13,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 public class MvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
+        registry.addResourceHandler("/ui/**")
                 .addResourceLocations("classpath:/frontend/")
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {

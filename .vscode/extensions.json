@@ -1,0 +1,22 @@
+{
+    "recommendations": [
+        "bruno-api-client.bruno",
+        "vscjava.vscode-java-pack",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "lucono.karma-test-explorer",
+        "visualstudioexptteam.vscodeintellicode",
+        "yzhang.markdown-all-in-one",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-dependency",
+        "vmware.vscode-boot-dev-pack",
+        "vscjava.vscode-java-test",
+        "redhat.vscode-xml",
+        "hbenl.vscode-test-explorer",
+        "ms-vscode.test-adapter-converter",
+        "cweijan.dbclient-jdbc",
+        "sonarsource.sonarlint-vscode",
+        "github.vscode-github-actions"
+    ]
+}

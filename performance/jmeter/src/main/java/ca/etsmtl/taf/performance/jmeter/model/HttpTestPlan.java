@@ -110,6 +110,7 @@ public class HttpTestPlan extends TestPlanBase {
     return method;
   }
 
+  @Override
   public void setMethod(String method) {
     this.method = method;
   }
@@ -152,8 +153,8 @@ public class HttpTestPlan extends TestPlanBase {
         .replace("$PATH$", path)
         .replace("$METHOD$", method)
         .replace("$LOOP_COUNTER$", loop);
-    ;
-    if (!data.equals(null) && !data.equals("")) {
+
+    if (data != null && !data.isEmpty()) {
       ObjectMapper objectMapper = new ObjectMapper();
       objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
       Object jsonMap = objectMapper.readValue(data, Object.class);
