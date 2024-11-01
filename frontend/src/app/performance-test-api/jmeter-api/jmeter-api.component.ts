@@ -125,10 +125,6 @@ export class JmeterApiComponent implements OnInit {
       return isValid;
     }
 
-    
-
-  
-
     onHttpSubmit(showAlert: boolean = false) {
     
 
@@ -275,6 +271,18 @@ export class JmeterApiComponent implements OnInit {
       this.ftp_description.style.display = 'none';
       this.http_description.style.display = 'block';
       this.switchLabel.innerText = 'HTTP';
+    }
+  }
+
+  newTest() {
+    this.testResults = [];
+    this.selectedTest = null;
+    this.modal!.style.display = 'none';
+    if (this.httpForm) {
+      (this.httpForm as HTMLFormElement).reset();
+    }
+    if (this.ftpForm) {
+      (this.ftpForm as HTMLFormElement).reset();
     }
   }
 

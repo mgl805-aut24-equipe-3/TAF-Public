@@ -125,7 +125,12 @@ input:checked + .slider:before {
 }
 
 .exportbutton {
+  background-color: #28a745; /* Vert vif */
   margin-right: 15px;
+  border: none; 
+  padding: 10px 20px; 
+  border-radius: 4px; 
+  font-weight: bold;
 }
 
 .modal-details{
