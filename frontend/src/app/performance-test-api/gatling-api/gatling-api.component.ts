@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
 import Swal from 'sweetalert2';
 import { GatlingRequest } from './gatling-request';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { environment } from 'src/environments/environment'; // Ajout de l'importation
 
 @Component({
   selector: 'app-gatling-api',
@@ -17,7 +16,7 @@ export class GatlingApiComponent implements OnInit {
   reportModal: HTMLElement | null = null; 
   span: HTMLElement | null = null;
   testResult: any;
-  testLog: String = "";
+  testLog: string = "";
   latestReportContent: SafeHtml | null = null; // Contenu du dernier rapport de test
 
   busy: Subscription | undefined;
@@ -25,7 +24,7 @@ export class GatlingApiComponent implements OnInit {
   request: GatlingRequest = new GatlingRequest();
 
   constructor(
-    private performanceTestApiService: PerformanceTestApiService,
+    private readonly performanceTestApiService: PerformanceTestApiService,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -35,7 +34,43 @@ export class GatlingApiComponent implements OnInit {
     this.span = document.getElementsByClassName("close")[0] as HTMLElement;
   }
 
+  validateForm(): boolean {
+    let isValid = true;
+    const requiredFields = [
+      { element: 'testScenarioName', errorMessage: 'Veuillez entrer une valeur' },
+      { element: 'testBaseUrl', errorMessage: 'Veuillez entrer une valeur' },
+      { element: 'testUri', errorMessage: 'Veuillez entrer une valeur' },
+      { element: 'testMethodType', errorMessage: 'Veuillez sélectionner un type de requête' },
+      { element: 'userNumber', errorMessage: 'Veuillez entrer ou sélectionner une valeur' }
+    ];
+
+    requiredFields.forEach(field => {
+      const inputElement = document.getElementsByName(field.element)[0] as HTMLInputElement | null;
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'text-danger';
+
+      if (inputElement?.nextElementSibling) {
+        inputElement.nextElementSibling.remove();
+      }
+      if (inputElement && inputElement.value.trim() === '') {
+        isValid = false;
+        inputElement.classList.add('is-invalid');
+        errorDiv.innerText = field.errorMessage;
+        inputElement.insertAdjacentElement('afterend', errorDiv);
+      } else {
+        inputElement?.classList.remove('is-invalid');
+      }
+    });
+
+    return isValid;
+  }
+
   onSubmit() {
+
+    if (!this.validateForm()) {
+      return;
+    }
+
     this.busy = this.performanceTestApiService.sendGatlingRequest(this.request)
       .subscribe((response: any) => {
         this.modal!.style.display = "block";
@@ -73,7 +108,7 @@ export class GatlingApiComponent implements OnInit {
 
   //  Afficher le dernier rapport
   showLatestReport() {
-    window.open(`${environment.apiUrl}/api/gatling/latest-report`, '_blank');
+    const reportWindow = window.open(this.performanceTestApiService.getLatestReportUrl().toString(), '_blank');
   }
 
   openReportModal() {

@@ -156,6 +156,25 @@
   color: green;
 }
 
+.test-result {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.test-result-icon {
+  margin-right: 10px;
+  font-size: 1.5em;
+}
+
+.test-result-success {
+  color: #5cb85c;
+}
+
+.test-result-failure {
+  color: #d9534f;
+}
+
 @media screen and (max-width: 600px) {
   .container {
     flex-direction: column;
@@ -164,6 +183,19 @@
   .test-description {
     flex: 0 0 100%;
   }
+}
+
+.required-star {
+  color: red;
+  margin-left: 2px;
+}
+
+.is-invalid {
+  border: 1px solid red;
+}
+
+.text-danger {
+  color: red;
 }
 
 .showbutton {

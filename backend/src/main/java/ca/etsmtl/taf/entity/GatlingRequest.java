@@ -1,67 +1,64 @@
 package ca.etsmtl.taf.entity;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class GatlingRequest {
-    private String testBaseUrl;
-    private String testScenarioName;
-    private String testRequestName;
-    private String testUri;
-    private String testRequestBody;
-    private String testMethodType;
-    private int testUsersNumber;
-
-    public String getTestBaseUrl() {
-        return testBaseUrl;
+    @JsonAlias("testBaseUrl")
+    private String baseUrl;
+    @JsonAlias("testScenarioName")
+    private String scenarioName;
+    @JsonAlias("testRequestName")
+    private String requestName;
+    @JsonAlias("testUri")
+    private String uri;
+    @JsonAlias("testRequestBody")
+    private String requestBody;
+    @JsonAlias("testMethodType")
+    private String methodType;
+    @JsonAlias("testUsersNumber")
+    private int usersNumber;
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+    public String getScenarioName() {
+        return scenarioName;
+    }
+    public void setScenarioName(String scenarioName) {
+        this.scenarioName = scenarioName;
+    }
+    public String getRequestName() {
+        return requestName;
+    }
+    public void setRequestName(String requestName) {
+        this.requestName = requestName;
+    }
+    public String getUri() {
+        return uri;
+    }
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+    public String getRequestBody() {
+        return requestBody;
+    }
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+    }
+    public String getMethodType() {
+        return methodType;
+    }
+    public void setMethodType(String methodType) {
+        this.methodType = methodType;
+    }
+    public int getUsersNumber() {
+        return usersNumber;
+    }
+    public void setUsersNumber(int usersNumber) {
+        this.usersNumber = usersNumber;
     }
 
-    public void setTestBaseUrl(String testBaseUrl) {
-        this.testBaseUrl = testBaseUrl;
-    }
-
-    public String getTestScenarioName() {
-        return testScenarioName;
-    }
-
-    public void setTestScenarioName(String testScenarioName) {
-        this.testScenarioName = testScenarioName;
-    }
-
-    public String getTestRequestName() {
-        return testRequestName;
-    }
-
-    public void setTestRequestName(String testRequestName) {
-        this.testRequestName = testRequestName;
-    }
-
-    public String getTestUri() {
-        return testUri;
-    }
-
-    public void setTestUri(String testUri) {
-        this.testUri = testUri;
-    }
-
-    public String getTestRequestBody() {
-        return testRequestBody;
-    }
-
-    public void setTestRequestBody(String testRequestBody) {
-        this.testRequestBody = testRequestBody;
-    }
-
-    public String getTestMethodType() {
-        return testMethodType;
-    }
-
-    public void setTestMethodType(String testMethodType) {
-        this.testMethodType = testMethodType;
-    }
-
-    public int getTestUsersNumber() {
-        return testUsersNumber;
-    }
-
-    public void setTestUsersNumber(int testUsersNumber) {
-        this.testUsersNumber = testUsersNumber;
-    }
+    
 }

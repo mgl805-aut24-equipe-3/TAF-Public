@@ -8,7 +8,7 @@ import { JMeterFTPRequest } from '../performance-test-api/jmeter-api/jmeter-ftp-
 import { GatlingRequest } from '../performance-test-api/gatling-api/gatling-request';
 
 const GATLING_API = `${environment.apiUrl}/api/gatling/runSimulation`;
-// const LATEST_REPORT_API = `${environment.apiUrl}/api/gatling/latest-report`;
+const LATEST_REPORT_API = `${environment.apiUrl}/api/gatling/latest-report`;
 const JMeter_HttpRequest_API = `${environment.apiUrl}/api/performance/jmeter/http`;
 const JMeter_FtpRequest_API = `${environment.apiUrl}/api/performance/jmeter/ftp`;
 
@@ -31,10 +31,10 @@ export class PerformanceTestApiService {
     return response;
   }
 
-  // getLatestReport(): Observable<string> {
-  //   // Appelle l'API pour récupérer le contenu du dernier rapport Gatling
-  //   return this.http.get(LATEST_REPORT_API, { responseType: 'text' });
-  // }
+  getLatestReportUrl(): URL {
+    // Appelle l'API pour récupérer le contenu du dernier rapport Gatling
+    return new URL(LATEST_REPORT_API);
+  }
   
   sendHttpJMeterRequest(
     jmeter_http_request: JMeterHttpRequest
