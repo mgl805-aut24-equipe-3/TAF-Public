@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.etsmtl.taf.performance.gatling.payload.response.MessageResponse;
 import ca.etsmtl.taf.performance.gatling.entity.GatlingTestRequest;
-import ca.etsmtl.taf.performance.gatling.provider.GatlingJarPathProvider;
 import ca.etsmtl.taf.performance.gatling.config.GatlingConfigurator;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
