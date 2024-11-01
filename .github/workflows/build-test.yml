@@ -36,7 +36,10 @@ jobs:
         distribution: 'sapmachine'
         cache: maven
     - name: Build and test with Maven
-      run: mvn clean install
+      run: |
+        # Temporary fix: ensure gatling is built first
+        mvn clean install --file gatling/pom.xml
+        mvn clean install
     # For now, the backend jar is not reused in subsequent steps
     # - name: Upload .jar file
     #   uses: actions/upload-artifact@v4
