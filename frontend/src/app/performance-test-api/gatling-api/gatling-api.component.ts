@@ -13,7 +13,7 @@ import { GatlingRequest } from './gatling-request';
 export class GatlingApiComponent implements OnInit {
 
   modal: HTMLElement | null = null;
-  reportModal: HTMLElement | null = null; 
+  reportModal: HTMLElement | null = null;
   span: HTMLElement | null = null;
   testResult: any;
   testLog: string = "";
@@ -74,21 +74,21 @@ export class GatlingApiComponent implements OnInit {
     this.busy = this.performanceTestApiService.sendGatlingRequest(this.request)
       .subscribe((response: any) => {
         this.modal!.style.display = "block";
-  
+
         // Extraction des messages de la réponse de l'API
         const pattern = /(.+)\n?/g;
         const matches: string[] = Array.from(response.message?.matchAll(pattern));
         const arrayOfStrings = matches.map(match => match[0]);
-  
+
         // Filtrer les messages pour ne conserver que ceux indiquant le succès ou l'échec global
         const successMessage = arrayOfStrings.find(message => message.includes('request count'));
         const reportGeneratedMessage = arrayOfStrings.find(message => message.includes('Generated Report'));
-  
+
         // Détermination du succès ou de l'échec global
         this.testResult = [{
           success: !!successMessage
         }];
-  
+
         // Ajouter un message indiquant que le rapport a été généré
         if (reportGeneratedMessage) {
           this.testResult.push({
@@ -96,7 +96,7 @@ export class GatlingApiComponent implements OnInit {
             success: true
           });
         }
-  
+
       }, (error: any) => {
         Swal.fire({
           icon: 'error',
@@ -141,7 +141,7 @@ export class GatlingApiComponent implements OnInit {
   }
 
   newTest() {
-    this.request = new GatlingRequest(); 
+    this.request = new GatlingRequest();
     this.closeModal();
   }
 }

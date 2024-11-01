@@ -27,8 +27,6 @@ describe('JmeterApiComponent', () => {
       ]
     })
     .compileComponents();
-
-    performanceTestApiService = TestBed.inject(PerformanceTestApiService) as jasmine.SpyObj<PerformanceTestApiService>;
   });
 
   /**
@@ -39,6 +37,7 @@ describe('JmeterApiComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(JmeterApiComponent);
     component = fixture.componentInstance;
+    performanceTestApiService = TestBed.inject(PerformanceTestApiService) as jasmine.SpyObj<PerformanceTestApiService>;
     fixture.detectChanges();
   });
 
@@ -55,30 +54,32 @@ describe('JmeterApiComponent', () => {
    * Ce test simule un appel à la méthode onHttpSubmit et vérifie que la méthode sendHttpJMeterRequest du service est appelée.
    */
   it('devrait appeler sendHttpJMeterRequest lors de l\'appel de onHttpSubmit', () => {
-    // const mockResponse = [{ success: true }];
-    // performanceTestApiService.sendHttpJMeterRequest.and.returnValue(of(mockResponse));
+    spyOn(component, 'validateHttpForm').and.returnValue(true);
+    const mockResponse = [{ success: true }];
+    performanceTestApiService.sendHttpJMeterRequest.and.returnValue(of(mockResponse));
 
-    // component.onHttpSubmit();
+    component.onHttpSubmit();
 
-    // expect(performanceTestApiService.sendHttpJMeterRequest).toHaveBeenCalled();
-    // expect(component.modal!.style.display).toBe('block');
+    expect(performanceTestApiService.sendHttpJMeterRequest).toHaveBeenCalled();
+    expect(component.modal!.style.display).toBe('block');
   });
 
   /**
    * Test pour vérifier que SweetAlert s'affiche en cas d'erreur ou si la réponse est vide dans onHttpSubmit.
    */
   it('devrait afficher SweetAlert en cas d\'erreur ou si la réponse est vide dans onHttpSubmit', () => {
-    // performanceTestApiService.sendHttpJMeterRequest.and.returnValue(of([]));
+    spyOn(component, 'validateHttpForm').and.returnValue(true);
+    performanceTestApiService.sendHttpJMeterRequest.and.returnValue(of([]));
 
-    // component.onHttpSubmit();
+    component.onHttpSubmit();
 
-    // expect(Swal.isVisible()).toBeTruthy();
+    expect(Swal.isVisible()).toBeTruthy();
 
-    // performanceTestApiService.sendHttpJMeterRequest.and.returnValue(throwError('error'));
+    performanceTestApiService.sendHttpJMeterRequest.and.returnValue(throwError('error'));
 
-    // component.onHttpSubmit();
+    component.onHttpSubmit();
 
-    // expect(Swal.isVisible()).toBeTruthy();
+    expect(Swal.isVisible()).toBeTruthy();
   });
 
   /**
@@ -86,30 +87,34 @@ describe('JmeterApiComponent', () => {
    * Ce test simule un appel à la méthode onFtpSubmit et vérifie que la méthode sendFtpJMeterRequest du service est appelée.
    */
   it('devrait appeler sendFtpJMeterRequest lors de l\'appel de onFtpSubmit', () => {
-    // const mockResponse = [{ success: true }];
-    // performanceTestApiService.sendFtpJMeterRequest.and.returnValue(of(mockResponse));
+    spyOn(component, 'validateFtpForm').and.returnValue(true);
 
-    // component.onFtpSubmit();
+    const mockResponse = [{ success: true }];
+    performanceTestApiService.sendFtpJMeterRequest.and.returnValue(of(mockResponse));
 
-    // expect(performanceTestApiService.sendFtpJMeterRequest).toHaveBeenCalled();
-    // expect(component.modal!.style.display).toBe('block');
+    component.onFtpSubmit();
+
+    expect(performanceTestApiService.sendFtpJMeterRequest).toHaveBeenCalled();
+    expect(component.modal!.style.display).toBe('block');
   });
 
   /**
    * Test pour vérifier que SweetAlert s'affiche en cas d'erreur ou si la réponse est vide dans onFtpSubmit.
    */
   it('devrait afficher SweetAlert en cas d\'erreur ou si la réponse est vide dans onFtpSubmit', () => {
-    // performanceTestApiService.sendFtpJMeterRequest.and.returnValue(of([]));
+    spyOn(component, 'validateFtpForm').and.returnValue(true);
 
-    // component.onFtpSubmit();
+    performanceTestApiService.sendFtpJMeterRequest.and.returnValue(of([]));
 
-    // expect(Swal.isVisible()).toBeTruthy();
+    component.onFtpSubmit();
 
-    // performanceTestApiService.sendFtpJMeterRequest.and.returnValue(throwError('error'));
+    expect(Swal.isVisible()).toBeTruthy();
 
-    // component.onFtpSubmit();
+    performanceTestApiService.sendFtpJMeterRequest.and.returnValue(throwError('error'));
 
-    // expect(Swal.isVisible()).toBeTruthy();
+    component.onFtpSubmit();
+
+    expect(Swal.isVisible()).toBeTruthy();
   });
 
   /**
