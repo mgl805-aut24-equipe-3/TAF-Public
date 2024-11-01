@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,6 +127,43 @@ public class JMeterConfigurator implements WebMvcConfigurer {
     }
 
     /**
+     * Get the path to the latest JMeter report generated.
+     * 
+     * @return The path
+     */
+    public static String getLatestReportPath() {
+        File[] directories = JMETER_RESULTS_FOLDER.listFiles(File::isDirectory);
+        if (directories == null || directories.length == 0) {
+            logger.info("Aucun dossier de rapport trouvé dans le dossier : {}", JMETER_RESULTS_FOLDER.getAbsolutePath());
+            return null;
+        }
+        Arrays.sort(directories, Comparator.comparingLong(File::lastModified).reversed());
+        File latestReportDir = directories[0];
+        File indexFile = new File(latestReportDir, "index.html");
+        if (indexFile.exists()) {
+            logger.info("Dernier fichier de rapport trouvé : {}", indexFile.getAbsolutePath());
+            return indexFile.getAbsolutePath();
+        } else {
+            logger.info("Aucun fichier index.html trouvé dans le dernier dossier de rapport : {}", latestReportDir.getAbsolutePath());
+            return null;
+        }
+    }
+
+    /**
+     * Get the URL to the latest JMeter report generated.
+     * 
+     * @return The URL
+     */
+    public static String getLatestReportUrl() {
+        String latestReportPath = getLatestReportPath();
+        if (latestReportPath != null) {
+            String reportFolderName = new File(latestReportPath).getParentFile().getName();
+            return "http://localhost:8083/reports/performance/jmeter/dashboard/" + reportFolderName + "/index.html";
+        }
+        return null;
+    }
+
+    /**
      * Convenient event listener called when the SpringBootApplication has been
      * initialized and is
      * ready to listen to requests.
@@ -156,12 +195,23 @@ public class JMeterConfigurator implements WebMvcConfigurer {
         // org.apache.jmeter.report.templates
         // to the temp folder
         copyReportTemplateFiles();
+
+        logLatestReportPath();
+    }
+    // pour le log 
+    private void logLatestReportPath() {
+        String latestReportPath = getLatestReportPath();
+        if (latestReportPath != null) {
+            logger.info("Le dernier rapport JMeter généré se trouve à : {}", latestReportPath);
+        } else {
+            logger.info("Aucun rapport JMeter généré trouvé.");
+        }
     }
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/reports/performance/jmeter/dashboard/**")
-                .addResourceLocations(JMETER_RESULTS_FOLDER.toPath().toUri().toString())
+                .addResourceLocations(JMETER_RESULTS_FOLDER.toPath().toUri().toString() + "/")
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver())

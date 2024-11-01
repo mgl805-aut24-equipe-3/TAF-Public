@@ -126,8 +126,6 @@ export class JmeterApiComponent implements OnInit {
   }
 
   onHttpSubmit(showAlert: boolean = false) {
-
-
     if (!this.validateHttpForm()) {
       return;
     }
@@ -135,27 +133,23 @@ export class JmeterApiComponent implements OnInit {
     this.busy = this.performanceTestApiService
       .sendHttpJMeterRequest(this.http_request)
       .subscribe((response: any) => {
-        /*         this.testResults = response.map((result) => ({
-                  allThreads: result.allThreads,
-                  grpThreads: result.grpThreads,
-                  idleTime: result.IdleTime,
-                  dataType: result.dataType,
-                  connect: result.Connect,
-                  label: result.label,
-                  threadName: result.threadName,
-                  url: result.URL,
-                  responseCode: result.responseCode,
-                  latency: result.Latency,
-                  timestamp: result.timeStamp,
-                  elapsed: result.elapsed,
-                  success: result.success,
-                  bytes: result.bytes,
-                  responseMessage: result.responseMessage,
-                  failureMessage: result.failureMessage,
-                  sentBytes: result.sentBytes,
-                })); */
         this.testResults = response;
-        if (response.length != 0) {
+
+        // Transformation de la réponse pour inclure des informations sur le succès ou l'échec global
+        const successMessage = response.length != 0;
+        this.testResult = [{
+          success: successMessage
+        }];
+
+        // Ajouter un message indiquant que le rapport a été généré
+        if (successMessage) {
+          this.testResult.push({
+            message: 'Le rapport a été généré avec succès.',
+            success: true
+          });
+        }
+
+        if (successMessage) {
           this.modal!.style.display = 'block';
         } else {
           Swal.fire({
@@ -181,29 +175,8 @@ export class JmeterApiComponent implements OnInit {
     this.busy = this.performanceTestApiService
       .sendFtpJMeterRequest(this.ftp_request)
       .subscribe((response: any) => {
-        this.testResults = response
-
-        /*
-        .map((result) => ({
-          allThreads: result.allThreads,
-          grpThreads: result.grpThreads,
-          idleTime: result.IdleTime,
-          dataType: result.dataType,
-          connect: result.Connect,
-          label: result.label,
-          threadName: result.threadName,
-          url: result.URL,
-          responseCode: result.responseCode,
-          latency: result.Latency,
-          timestamp: result.timeStamp,
-          elapsed: result.elapsed,
-          success: result.success,
-          bytes: result.bytes,
-          responseMessage: result.responseMessage,
-          failureMessage: result.failureMessage,
-          sentBytes: result.sentBytes,
-        }));
-        */
+        this.testResults = response;
+        this.testResult = response; // Ajoutez cette ligne
         if (response.length != 0) {
           this.modal!.style.display = 'block';
         } else {
@@ -329,4 +302,10 @@ export class JmeterApiComponent implements OnInit {
     });
     doc.save('test-results.pdf');
   }
+
+  //  Afficher le dernier rapport
+  showLatestReport() {
+    const reportWindow = window.open(this.performanceTestApiService.getLatestReportUrlJmeter().toString(), '_blank');
+  }
+
 }
