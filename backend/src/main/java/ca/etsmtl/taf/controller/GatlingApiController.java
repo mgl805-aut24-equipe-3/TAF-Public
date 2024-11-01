@@ -1,21 +1,29 @@
 package ca.etsmtl.taf.controller;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.File;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.net.URI;
 import java.nio.file.Path;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,17 +31,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.etsmtl.Main;
+import ca.etsmtl.taf.config.GatlingConfigurator;
 import ca.etsmtl.taf.entity.GatlingRequest;
 import ca.etsmtl.taf.payload.response.MessageResponse;
-import ca.etsmtl.taf.provider.GatlingJarPathProvider;
-import ca.etsmtl.taf.config.GatlingConfigurator;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/gatling")
 public class GatlingApiController {
 
-    static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    private static final Logger logger = LoggerFactory.getLogger(GatlingApiController.class);
 
     /**
      * @param gatlingRequest
@@ -42,74 +52,76 @@ public class GatlingApiController {
     @PostMapping(value = "/runSimulation")
     public ResponseEntity<MessageResponse> runSimulation(@RequestBody GatlingRequest gatlingRequest) {
         try {
-            String gatlingJarPath = new GatlingJarPathProvider().getGatlingJarPath();
-            String testRequest = isWindows
-                    ? "{\\\"baseUrl\\\":\\\"" + gatlingRequest.getTestBaseUrl() + "\\\",\\\"scenarioName\\\":\\\""
-                            + gatlingRequest.getTestScenarioName() + "\\\",\\\"requestName\\\":\\\""
-                            + gatlingRequest.getTestRequestName() + "\\\",\\\"uri\\\":\\\""
-                            + gatlingRequest.getTestUri() + "\\\",\\\"requestBody\\\":\\\""
-                            + gatlingRequest.getTestRequestBody() + "\\\",\\\"methodType\\\":\\\""
-                            + gatlingRequest.getTestMethodType() + "\\\",\\\"usersNumber\\\":\\\""
-                            + gatlingRequest.getTestUsersNumber() + "\\\"}"
-                    :
 
-                    "{\"baseUrl\":\"" + gatlingRequest.getTestBaseUrl()
-                            + "\",\"scenarioName\":\"" + gatlingRequest.getTestScenarioName()
-                            + "\",\"requestName\":\"" + gatlingRequest.getTestRequestName() + "\",\"uri\":\""
-                            + gatlingRequest.getTestUri() + "\",\"requestBody\":\""
-                            + gatlingRequest.getTestRequestBody() + "\",\"methodType\":\""
-                            + gatlingRequest.getTestMethodType() + "\",\"usersNumber\":\""
-                            + gatlingRequest.getTestUsersNumber() + "\"}";
+            // Convert GatlingRequest to JSON String
+            ObjectMapper objectMapper = new ObjectMapper();
+            String testRequest = objectMapper.writeValueAsString(gatlingRequest);
 
-            StringBuilder gatlingCommand = new StringBuilder();
-            gatlingCommand.append("java -jar ");
-            gatlingCommand.append(gatlingJarPath);
-            gatlingCommand.append(" -DrequestJson=");
-            gatlingCommand.append(testRequest);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            PipedOutputStream pipedOut = new PipedOutputStream();
+            PipedInputStream pipedIn = new PipedInputStream(pipedOut);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(pipedIn));
 
-            Runtime runtime = Runtime.getRuntime();
-            Process process = runtime.exec(gatlingCommand.toString());
+            Future<?> future = executor.submit(() -> {
+                try {
+                    @SuppressWarnings("java:S106")
+                    PrintStream originalOut = System.out;
+                    System.setOut(new PrintStream(pipedOut));
+                    try {
+                        logger.info("Executing Gatling with request: {}", testRequest);
+                        Main.main(new String[] { testRequest });
+                    } finally {
+                        System.setOut(originalOut);
+                        pipedOut.close();
+                    }
+                } catch (Exception e) {
+                    logger.error("Error happened executing Gatling", e);
+                }
+            });
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder output = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
             }
 
-            int exitCode = process.waitFor();
+            reader.close();
 
-            if (exitCode == 0) {
-                return new ResponseEntity<>(new MessageResponse(parseOutput(output.toString())),
-                        HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new MessageResponse(output.toString()),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return runGatling(future, output.toString());
+
         } catch (IOException e) {
             return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        }
+    }
+
+    private ResponseEntity<MessageResponse> runGatling(Future<?> future, String output) {
+        try {
+            future.get();
+            return new ResponseEntity<>(new MessageResponse(parseOutput(output)),
+                    HttpStatus.OK);
+        } catch (InterruptedException | ExecutionException e) {
+            // Dramatic failure
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     private String parseOutput(String output) {
-        String returnString = "---- Global Information --------------------------------------------------------\n";
+        StringBuilder returnString = new StringBuilder(
+                "---- Global Information --------------------------------------------------------\n");
 
         String startPattern = "---- Global Information --------------------------------------------------------";
         String endPattern = "---- Response Time Distribution ------------------------------------------------";
         Pattern pattern = Pattern.compile(startPattern + "(.*?)" + endPattern, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(output);
         if (matcher.find()) {
-            returnString += matcher.group(1).trim() + "\n";
+            returnString.append(matcher.group(1).trim()).append("\n");
         } else {
-            returnString += "Not found in Gatling output.";
+            returnString.append("Not found in Gatling output.");
         }
 
-        returnString += "---- Generated Report ------------------------------------------------------\n";
+        returnString.append("---- Generated Report ------------------------------------------------------\n");
 
         String regex = "Please open the following file: (file:///[^\\s]+|https?://[^\\s]+)";
 
@@ -118,13 +130,13 @@ public class GatlingApiController {
 
         if (matcher.find()) {
             for (int i = 1; i <= matcher.groupCount(); i++) {
-                returnString += matcher.group(i).trim();
+                returnString.append(matcher.group(i).trim());
             }
         } else {
-            returnString += "Not found in Gatling output.";
+            returnString.append("Not found in Gatling output.");
         }
 
-        return returnString;
+        return returnString.toString();
     }
 
     @GetMapping("/latest-report")
@@ -147,30 +159,45 @@ public class GatlingApiController {
                 File reportFile = new File(latestReportDir, "index.html");
 
                 if (reportFile.exists()) {
+
+                    // Redirect to the latest report available at the path
+                    // /reports/performance/gatling/dashboard/
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setLocation(
+                            URI.create("/reports/performance/gatling/dashboard/" + latestReportDir.getName() + "/index.html"));
+                    return new ResponseEntity<>(headers, HttpStatus.FOUND);
+
                     // Lire le contenu du fichier HTML
-                    StringBuilder htmlContent = new StringBuilder();
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(reportFile)))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            htmlContent.append(line).append("\n");
-                        }
-                    }
+                    // StringBuilder htmlContent = new StringBuilder();
+                    // try (BufferedReader reader = new BufferedReader(
+                    // new InputStreamReader(new FileInputStream(reportFile)))) {
+                    // String line;
+                    // while ((line = reader.readLine()) != null) {
+                    // htmlContent.append(line).append("\n");
+                    // }
+                    // }
 
-                    String reportHtml = htmlContent.toString()
-                            .replace("href=\"", "href=\"http://localhost:8083/api/performance/gatling/results/" + latestReportDir.getName() + "/")
-                            .replace("src=\"", "src=\"http://localhost:8083/api/performance/gatling/results/" + latestReportDir.getName() + "/");
+                    // String reportHtml = htmlContent.toString()
+                    // .replace("href=\"",
+                    // "href=\"http://localhost:8083/api/performance/gatling/results/"
+                    // + latestReportDir.getName() + "/")
+                    // .replace("src=\"",
+                    // "src=\"http://localhost:8083/api/performance/gatling/results/"
+                    // + latestReportDir.getName() + "/");
 
-                    return ResponseEntity.ok()
-                            .contentType(MediaType.TEXT_HTML)
-                            .body(reportHtml);
+                    // return ResponseEntity.ok()
+                    // .contentType(MediaType.TEXT_HTML)
+                    // .body(reportHtml);
                 } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun rapport trouvé dans le dernier répertoire.");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body("Aucun rapport trouvé dans le dernier répertoire.");
                 }
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun répertoire de rapport trouvé.");
             }
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur de lecture du fichier de rapport.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur de lecture du fichier de rapport.");
         }
     }
 
