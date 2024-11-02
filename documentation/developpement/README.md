@@ -24,18 +24,18 @@ Nous avons utilisé **Discord pour la communication asynchrone** et pour **une r
 ## Processus mis en place
 1. **Tâche de programmation collaborative**
    Afin de s'assurer de la qualité de notre code à livrer à l'équipe, nous avons décidé de créer un fork pour toute notre équipe à partir duquel chaque équipier à créer un fork.
-   Ainsi, chacun doit créer un Pull Request vers le fork de l'équipe pour que le code soit vérifier avant la fusion dans la branche `develop`. Pour mieux comprendre la configuration, voici un diagramme:
+   Ainsi, chacun doit créer un Pull Request vers le fork de l'équipe pour que le code soit vérifier avant la fusion dans la branche `develop`. Pour mieux comprendre la configuration, voici un diagramme ci dessous. De plus, Github a été intégré à une chaîne Discord pour s'assurer une réaction rapide des membres de l'équipe.
    ![code collaboratif](./architecture/Code%20collaboratif.drawio.svg)
-2. **Harmonisation des environnements de développement**
+3. **Harmonisation des environnements de développement**
    L'équipe utilise VSCode qui a la possibilité de recommender quelles extensions devraient installer pour faciliter le travail de développement. Par exemple, l'extension Spring Boot Dashboard permet de démarrer ou déboguer l'application backend avec facilité.
-3. **Clean-as-you-code**
+4. **Clean-as-you-code**
    Selon les bonnes pratiques, nous utilisons l'extension SonarLint dans VSCode pour s'assurer de la lisibilité et de l'application de règle de style et de syntaxe. Ceci fonctionne à la fois pour Java
-4. **Tests unitaires**
+5. **Tests unitaires**
    Les composants JMeter, Gatling et la partie UI pour les tests de performance sont maintenant dotés de tests unitaires que chaque équipier peut exécuter avant de faire ses commits.
-5. **Tests locaux des API**
+6. **Tests locaux des API**
    Ajout de collections de tests pour l'outil de test d'API [Bruno](https://docs.usebruno.com/introduction/what-is-bruno). Ces tests peuvent être executé localement ou dans un environnement d'intégration continue comme Github Actions.
    Cela peut être utile dans le cas de tests après le déploiement sur un serveur.
-6. **Intégration continue spéficique au projet 3**
+7. **Intégration continue spéficique au projet 3**
    Les Github Actions ont été réusiner pour permettre l'exécution des tests automatiques Junit et Karma dès qu'une Pull Request est créée ou modifiée. Cela permet d'effectuer des vérification sans supervision et avant que le code soit vérifier manuellement. 
 
 > **À venir**: voir le [table Kanban](https://github.com/orgs/mgl805-aut24-equipe-3/projects/1/views/1)
