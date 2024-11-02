@@ -124,15 +124,6 @@ input:checked + .slider:before {
   overflow-y: auto; /* Ajoute un défilement si le contenu dépasse en hauteur */
 }
 
-.exportbutton {
-  background-color: #28a745; /* Vert vif */
-  margin-right: 15px;
-  border: none; 
-  padding: 10px 20px; 
-  border-radius: 4px; 
-  font-weight: bold;
-}
-
 .modal-details{
   display: block;
   position: fixed; 

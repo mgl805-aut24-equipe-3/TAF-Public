@@ -6,9 +6,6 @@ import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
 
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-
 @Component({
   selector: 'app-jmeter-api',
   templateUrl: './jmeter-api.component.html',
@@ -257,50 +254,6 @@ export class JmeterApiComponent implements OnInit {
     if (this.ftpForm) {
       (this.ftpForm as HTMLFormElement).reset();
     }
-  }
-
-  exportToPDF() {
-    const doc = new jsPDF();
-    const col = ["Data Type", "Connect", "Label", "Thread Name", "URL", "Response Code", "Latency", "Timestamp", "Elapsed", "Status", "Bytes", "Response Message", "Failure Message", "Sent Bytes"];
-    const rows = this.testResults.map(result => [
-      result.dataType,
-      result.connect,
-      result.label,
-      result.threadName,
-      result.url,
-      result.responseCode,
-      result.latency,
-      result.timestamp,
-      result.elapsed,
-      result.success === 'true' ? 'Success' : 'Failed',
-      result.bytes,
-      result.responseMessage,
-      result.failureMessage,
-      result.sentBytes
-    ]);
-
-    (doc as any).autoTable({
-      head: [col],
-      body: rows,
-      startY: 10,
-      columnStyles: {
-        0: { cellWidth: 10 },
-        1: { cellWidth: 10 },
-        2: { cellWidth: 15 },
-        3: { cellWidth: 20 },
-        4: { cellWidth: 20 },
-        5: { cellWidth: 10 },
-        6: { cellWidth: 10 },
-        7: { cellWidth: 15 },
-        8: { cellWidth: 10 },
-        9: { cellWidth: 10 },
-        10: { cellWidth: 10 },
-        11: { cellWidth: 20 },
-        12: { cellWidth: 20 },
-        13: { cellWidth: 10 }
-      }
-    });
-    doc.save('test-results.pdf');
   }
 
   //  Afficher le dernier rapport
