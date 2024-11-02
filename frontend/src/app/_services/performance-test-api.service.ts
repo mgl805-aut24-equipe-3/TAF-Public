@@ -11,7 +11,6 @@ const GATLING_API = `${environment.apiUrl}/api/gatling/runSimulation`;
 const LATEST_REPORT_API = `${environment.apiUrl}/api/gatling/latest-report`;
 const JMeter_HttpRequest_API = `${environment.apiUrl}/api/performance/jmeter/http`;
 const JMeter_FtpRequest_API = `${environment.apiUrl}/api/performance/jmeter/ftp`;
-const LATEST_REPORT_API_JMETER = `${environment.apiUrl}/api/performance/jmeter/latest-report`;
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -37,10 +36,6 @@ export class PerformanceTestApiService {
     return new URL(LATEST_REPORT_API);
   }
 
-  getLatestReportUrlJmeter(): URL {
-    return new URL(LATEST_REPORT_API_JMETER);
-  }
-  
   sendHttpJMeterRequest(
     jmeter_http_request: JMeterHttpRequest
   ): Observable<any> {

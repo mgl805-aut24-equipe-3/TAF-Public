@@ -5,6 +5,7 @@ import { JMeterFTPRequest } from './jmeter-ftp-request';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PerformanceTestApiService } from 'src/app/_services/performance-test-api.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-jmeter-api',
@@ -38,7 +39,6 @@ export class JmeterApiComponent implements OnInit {
 
   selectedTest: any = null;
 
-
   constructor(
     private fb: FormBuilder,
     private performanceTestApiService: PerformanceTestApiService) { }
@@ -56,7 +56,6 @@ export class JmeterApiComponent implements OnInit {
     this.switchCheckbox = document.getElementById(
       'formSwitch'
     ) as HTMLInputElement;
-
   }
 
   validateHttpForm(): boolean {
@@ -135,7 +134,8 @@ export class JmeterApiComponent implements OnInit {
         // Transformation de la réponse pour inclure des informations sur le succès ou l'échec global
         const successMessage = response.length != 0;
         this.testResult = [{
-          success: successMessage
+          success: successMessage,
+          details: response.details // Assurez-vous que les détails sont inclus dans la réponse
         }];
 
         // Ajouter un message indiquant que le rapport a été généré
@@ -258,7 +258,15 @@ export class JmeterApiComponent implements OnInit {
 
   //  Afficher le dernier rapport
   showLatestReport() {
-    const reportWindow = window.open(this.performanceTestApiService.getLatestReportUrlJmeter().toString(), '_blank');
+    if (this.testResult && this.testResult.length > 0) {
+      const reportUrl = `${environment.apiUrl}${this.testResult[0].details['location-url']}`;
+      window.open(reportUrl, '_blank');
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: "Aucun rapport disponible",
+      });
+    }
   }
-
 }
