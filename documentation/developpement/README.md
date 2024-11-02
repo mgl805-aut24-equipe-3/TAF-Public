@@ -40,7 +40,8 @@ Nous avons utilisé **Discord pour la communication asynchrone** et pour **une r
 > Si possible: déploiement continue dans un environnement de tests
 ## Intégration des changements vers l'équipe 1
 Malheureusement, le référentiel principal a changé de visibilité, ce qui a pour conséquence de briser le lien avec le fork de l'équipe. 
-La solution est de copier manuellement le code (copier et coller du projet au complet). Le désavantage est que tout l'historique de nos commits sera perdu.
+La solution est de copier manuellement le code (copier et coller du projet au complet). Le désavantage est que tout l'historique de nos commits sera perdu. La configuration Github actuelle ressemble à ceci:
+![configuration Github actuelle](./architecture/Code%20collaboratif%20-%20Situation%20Temporaire.drawio.svg)
 
 ## Déploiement dans un environnement infonuagique
-Malheureusement, l'équipe 1 n'a jamais mis d'environnement AWS à notre disposition pour tester nos composants.
+Malheureusement, l'équipe 1 n'a jamais mis d'environnement AWS à notre disposition pour tester nos composants. 
