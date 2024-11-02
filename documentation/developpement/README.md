@@ -31,13 +31,14 @@ Nous avons utilisé **Discord pour la communication asynchrone** et pour **une r
 3. **Clean-as-you-code**
    Selon les bonnes pratiques, nous utilisons l'extension SonarLint dans VSCode pour s'assurer de la lisibilité et de l'application de règle de style et de syntaxe. Ceci fonctionne à la fois pour Java
 4. **Tests unitaires**
-   Les composants JMeter, Gatling et la partie UI pour les tests de performance sont maintenant dotés de tests unitaires que chaque équipier peut exécuter avant
-5. **Intégration continue spéficique au projet 3**
+   Les composants JMeter, Gatling et la partie UI pour les tests de performance sont maintenant dotés de tests unitaires que chaque équipier peut exécuter avant de faire ses commits.
+5. **Tests locaux des API**
+   Ajout de collections de tests pour l'outil de test d'API [Bruno](https://docs.usebruno.com/introduction/what-is-bruno). Ces tests peuvent être executé localement ou dans un environnement d'intégration continue comme Github Actions.
+   Cela peut être utile dans le cas de tests après le déploiement sur un serveur.
+6. **Intégration continue spéficique au projet 3**
    Les Github Actions ont été réusiner pour permettre l'exécution des tests automatiques Junit et Karma dès qu'une Pull Request est créée ou modifiée. Cela permet d'effectuer des vérification sans supervision et avant que le code soit vérifier manuellement. 
 
-> **À venir**:  
-> Vérification statique avec intégration avec SonarQube  
-> Si possible: déploiement continue dans un environnement de tests
+> **À venir**: voir le [table Kanban](https://github.com/orgs/mgl805-aut24-equipe-3/projects/1/views/1)
 ## Intégration des changements vers l'équipe 1
 Malheureusement, le référentiel principal a changé de visibilité, ce qui a pour conséquence de briser le lien avec le fork de l'équipe. 
 La solution est de copier manuellement le code (copier et coller du projet au complet). Le désavantage est que tout l'historique de nos commits sera perdu. La configuration Github actuelle ressemble à ceci:
