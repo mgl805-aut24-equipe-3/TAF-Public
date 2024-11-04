@@ -21,13 +21,14 @@ Il est possible de lancer les applications côté serveur et côté client sépa
 **Prérequis**
 1. Installer Maven
 2. Installer Jmeter
+3. Installer l'extension `Spring Boot Dashboard`avec VSCode
 
 **Pour tester localement**
 1. Naviguer à la racine du projet et ouvrir le fichier `.env` sous la racine du projet et changer la valeur de la variable `JMETER_INSTALL_DIR` pour le chemin où jmeter a été installé. Par exemple: `JMETER_INSTALL_DIR=/Users/jean-francoisl/Downloads/apache-jmeter-5.6.3`
 
 2. Exécuter la commande `mvn clean install`
 
-3. Lancer le module `taf-backend` à travers l'extension VSCode `Sprint Boot Dashboard` (vscjava.vscode-spring-boot-dashboard)
+3. Lancer le module `taf-backend` à travers l'extension VSCode `Spring Boot Dashboard` (vscjava.vscode-spring-boot-dashboard)
 La variable d'environnement devrait être chargée.
 
 #### Frontend
