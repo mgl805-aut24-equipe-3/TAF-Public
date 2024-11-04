@@ -8,7 +8,7 @@
 - Appels API définis dans les services
 - Suivre les standards Angular : [Lien vers le guide de style Angular](https://angular.io/guide/styleguide)
 
-## Java - Framework Spring
+## Java - Framework Spring 
 - Programmation orientée objet avec classes et interfaces
 - Utiliser le modèle MVC proposé par Spring (controller, services, repositories etc)
 - Noms des fonctions et variables en CamelCase : `thisIsAVariable`
