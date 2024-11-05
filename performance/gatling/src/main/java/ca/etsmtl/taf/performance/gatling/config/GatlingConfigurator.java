@@ -16,14 +16,10 @@ import java.util.Comparator;
 
 @Component
 public class GatlingConfigurator implements WebMvcConfigurer {
-    private static final Logger logger = LoggerFactory.getLogger(GatlingConfigurator.class); //Pour les logs
+    private static final Logger logger = LoggerFactory.getLogger(GatlingConfigurator.class);
 
-    //A decommenter si on veut utiliser le dossier temporaire du système et aussi pour gatling.resultsFolder du fichier gatling.conf, comment s'y prendre pour le coter temporaire doit-on juste le retirer ???? 
-
-    //private static final File SYSTEM_TEMP_FOLDER = new File(System.getProperty("java.io.tmpdir"));
-    //private static final File GATLING_RESULTS_FOLDER = new File(SYSTEM_TEMP_FOLDER, "gatling-results");
-
-    private static final File GATLING_RESULTS_FOLDER = new File(System.getProperty("user.dir"), "results"); //Pour respecter le chemin de la propriété gatling.resultsFolder 
+    private static final File SYSTEM_TEMP_FOLDER = new File(System.getProperty("java.io.tmpdir"));
+    private static final File GATLING_RESULTS_FOLDER = new File(SYSTEM_TEMP_FOLDER, "gatling");
 
     private volatile String latestReportPath; // Cache du chemin du dernier rapport
 
@@ -35,7 +31,6 @@ public class GatlingConfigurator implements WebMvcConfigurer {
     public void onApplicationEvent(ApplicationReadyEvent event) {
         createGatlingResultsFolder();
         updateLatestReportPath();
-        //logFolderContent();
     }
 
     @Override
@@ -93,26 +88,4 @@ public class GatlingConfigurator implements WebMvcConfigurer {
         }
         return latestReportPath; // Renvoie uniquement le nom du dossier
     }
-
-    // Aide pour le débogage
-    // private void logFolderContent() {
-    //     File[] files = GATLING_RESULTS_FOLDER.listFiles();
-    //     if (files != null) {
-    //         logger.info("Contenu du dossier de résultats Gatling :");
-    //         for (File file : files) {
-    //             logger.info(" - {} ({})", file.getName(), 
-    //                 file.isDirectory() ? "dossier" : "fichier");
-    //             if (file.isDirectory()) {
-    //                 File[] subFiles = file.listFiles();
-    //                 if (subFiles != null) {
-    //                     for (File subFile : subFiles) {
-    //                         logger.info("   └── {}", subFile.getName());
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     } else {
-    //         logger.warn("Impossible de lister le contenu du dossier de résultats Gatling");
-    //     }
-    // }
 }
