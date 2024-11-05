@@ -1,5 +1,4 @@
 package ca.etsmtl.taf.performance.jmeter;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;

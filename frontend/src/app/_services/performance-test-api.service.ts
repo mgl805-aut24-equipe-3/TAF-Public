@@ -35,7 +35,7 @@ export class PerformanceTestApiService {
     // Appelle l'API pour récupérer le contenu du dernier rapport Gatling
     return new URL(LATEST_REPORT_API);
   }
-  
+
   sendHttpJMeterRequest(
     jmeter_http_request: JMeterHttpRequest
   ): Observable<any> {

@@ -39,10 +39,12 @@
                         </tbody>
                     </table>
                 </div> -->
+                <span *ngIf="testResult && testResult.length > 0" class="result-icon success">&#10004;</span>
+                <p *ngIf="testResult && testResult.length > 0">Le rapport a été généré avec succès.</p>
+                <button mat-raised-button class="showbutton" color="primary" (click)="showLatestReport()">Afficher le rapport</button>
             </div>
             <div class="modal-footer">
                 <button mat-raised-button class="newtestbutton" color="accent" (click)="newTest()">Nouveau Test</button>
-                <button mat-raised-button color="accent" (click)="exportToPDF()" class="exportbutton">Exporter</button>
                 <button mat-raised-button class="closebutton" color="primary" (click)="closeModal()">Fermer</button>
             </div>
         </div>

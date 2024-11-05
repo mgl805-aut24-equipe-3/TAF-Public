@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,7 +160,7 @@ public class JMeterConfigurator implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/reports/performance/jmeter/dashboard/**")
-                .addResourceLocations(JMETER_RESULTS_FOLDER.toPath().toUri().toString())
+                .addResourceLocations(JMETER_RESULTS_FOLDER.toPath().toUri().toString()) // ToUri() puts trailing slash
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver())
@@ -200,8 +199,9 @@ public class JMeterConfigurator implements WebMvcConfigurer {
                 future.get();
                 createFolder(JMETER_REPORT_TEMPLATE_FOLDER, "report template", false);
             } catch (InterruptedException | ExecutionException e) {
+                Thread.currentThread().interrupt();
                 // Dramatic failure
-                new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         } else {
             createFolder(JMETER_REPORT_TEMPLATE_FOLDER, "report template", true);

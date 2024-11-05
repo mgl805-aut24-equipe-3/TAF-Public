@@ -1,56 +1,63 @@
 package ca.etsmtl.taf.performance.gatling.simulation;
 
-import ca.etsmtl.taf.performance.gatling.entity.GatlingRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.gatling.javaapi.core.*;
-import io.gatling.javaapi.core.Simulation;
-import io.gatling.javaapi.http.*;
+import static io.gatling.javaapi.core.CoreDsl.StringBody;
+import static io.gatling.javaapi.core.CoreDsl.exec;
+import static io.gatling.javaapi.core.CoreDsl.rampUsers;
+import static io.gatling.javaapi.core.CoreDsl.scenario;
+import static io.gatling.javaapi.http.HttpDsl.http;
+import static io.gatling.javaapi.http.HttpDsl.status;
 
-import static io.gatling.javaapi.core.CoreDsl.*;
-import static io.gatling.javaapi.http.HttpDsl.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.etsmtl.taf.performance.gatling.entity.GatlingTestRequest;
+import io.gatling.javaapi.core.ChainBuilder;
+import io.gatling.javaapi.core.ScenarioBuilder;
+import io.gatling.javaapi.core.Simulation;
+import io.gatling.javaapi.http.HttpProtocolBuilder;
+import io.gatling.javaapi.http.HttpRequestActionBuilder;
 
 public class LoadTestSimulation extends Simulation {
 
     private String requestJson = System.getProperty("requestJson");
 
 
-    private GatlingRequest gatlingRequest = parseRequestDetails(requestJson);
+    private GatlingTestRequest gatlingTestRequest = parseRequestDetails(requestJson);
 
 
-    private GatlingRequest parseRequestDetails(String requestJson) {
+    private GatlingTestRequest parseRequestDetails(String requestJson) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(requestJson, GatlingRequest.class);
+            return objectMapper.readValue(requestJson, GatlingTestRequest.class);
         } catch (Exception e) {
             return null; 
         }
     }
-    private HttpProtocolBuilder httpProtocol = http.baseUrl(gatlingRequest.getBaseUrl())
+    private HttpProtocolBuilder httpProtocol = http.baseUrl(gatlingTestRequest.getBaseUrl())
             .acceptHeader("application/json")
             .contentTypeHeader("application/json");
 
     private ChainBuilder createHttpRequest() {
-        String methodType = gatlingRequest.getMethodType();
+        String methodType = gatlingTestRequest.getMethodType();
         HttpRequestActionBuilder httpRequestBuilder;
 
         switch (methodType.toUpperCase()) {
             case "GET":
-                httpRequestBuilder =http(gatlingRequest.getRequestName())
-                        .get(gatlingRequest.getUri());
+                httpRequestBuilder =http(gatlingTestRequest.getRequestName())
+                        .get(gatlingTestRequest.getUri());
                 break;
             case "POST":
-                httpRequestBuilder = http(gatlingRequest.getRequestName())
-                        .post(gatlingRequest.getUri())
-                        .body(StringBody(gatlingRequest.getRequestBody()));
+                httpRequestBuilder = http(gatlingTestRequest.getRequestName())
+                        .post(gatlingTestRequest.getUri())
+                        .body(StringBody(gatlingTestRequest.getRequestBody()));
                 break;
             case "PUT":
-                httpRequestBuilder = http(gatlingRequest.getRequestName())
-                        .put(gatlingRequest.getUri())
-                        .body(StringBody(gatlingRequest.getRequestBody()));
+                httpRequestBuilder = http(gatlingTestRequest.getRequestName())
+                        .put(gatlingTestRequest.getUri())
+                        .body(StringBody(gatlingTestRequest.getRequestBody()));
                 break;
             case "DELETE":
-                httpRequestBuilder = http(gatlingRequest.getRequestName())
-                        .delete(gatlingRequest.getUri());
+                httpRequestBuilder = http(gatlingTestRequest.getRequestName())
+                        .delete(gatlingTestRequest.getUri());
                 break;
             default:
                 throw new IllegalArgumentException("Invalid HttpRequestMethod: " + methodType.toUpperCase());
@@ -60,12 +67,12 @@ public class LoadTestSimulation extends Simulation {
                 .check(status().not(404), status().not(500)));
     }
 
-    private ScenarioBuilder scn = scenario(gatlingRequest.getScenarioName())
+    private ScenarioBuilder scn = scenario(gatlingTestRequest.getScenarioName())
                 .exec(createHttpRequest());
 
     {
         setUp(
-                scn.injectOpen(rampUsers(gatlingRequest.getUsersNumber()).during(gatlingRequest.getUsersNumber()))
+                scn.injectOpen(rampUsers(gatlingTestRequest.getUsersNumber()).during(gatlingTestRequest.getUsersNumber()))
         ).protocols(httpProtocol);
     }
 }

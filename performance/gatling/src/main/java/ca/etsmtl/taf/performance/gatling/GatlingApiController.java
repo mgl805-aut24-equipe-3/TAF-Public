@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.io.ObjectInputFilter.Config;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.etsmtl.taf.performance.gatling.payload.response.MessageResponse;
+import ca.etsmtl.taf.performance.gatling.simulation.LoadTestSimulation;
+import io.gatling.app.Gatling;
+import io.gatling.core.config.GatlingPropertiesBuilder;
 import ca.etsmtl.taf.performance.gatling.entity.GatlingTestRequest;
 import ca.etsmtl.taf.performance.gatling.config.GatlingConfigurator;
 
@@ -68,7 +72,11 @@ public class GatlingApiController {
                     System.setOut(new PrintStream(pipedOut));
                     try {
                         logger.info("Executing Gatling with request: {}", testRequest);
-                        Main.main(new String[] { testRequest });
+                        System.setProperty("requestJson", testRequest);
+                        GatlingPropertiesBuilder props = new GatlingPropertiesBuilder();
+                        props.resultsDirectory(GatlingConfigurator.getGatlingResultsFolder());
+                        props.simulationClass(LoadTestSimulation.class.getName());
+                        Gatling.fromMap(props.build());
                     } finally {
                         System.setOut(originalOut);
                         pipedOut.close();
@@ -86,6 +94,7 @@ public class GatlingApiController {
 
             reader.close();
 
+            // TODO: Format Gatling response as JMeter response
             return runGatling(future, output.toString());
 
         } catch (IOException e) {
@@ -163,10 +172,10 @@ public class GatlingApiController {
                     // /reports/performance/gatling/dashboard/
                     HttpHeaders headers = new HttpHeaders();
                     headers.setLocation(
-                            URI.create("/reports/performance/gatling/dashboard/" + latestReportDir.getName() + "/index.html"));
+                            URI.create("/reports/performance/gatling/dashboard/" + latestReportDir.getName()
+                                    + "/index.html"));
                     return new ResponseEntity<>(headers, HttpStatus.FOUND);
 
-                    
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND)
                             .body("Aucun rapport trouvé dans le dernier répertoire.");
