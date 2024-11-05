@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -17,13 +17,10 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>17</java.version>
-        <maven.compiler.release>17</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gatling.version>${project.version}</gatling.version>
-        <gatling-maven-plugin.version>4.2.9</gatling-maven-plugin.version>
+        <gatling.version>3.9.5</gatling.version>
+        <!-- <gatling-maven-plugin.version>4.2.9</gatling-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version> -->
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
 
@@ -32,95 +29,37 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-    <!-- Gatling dependencies -->
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.6.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-archiver</artifactId>
-            <version>4.9.0</version>
-        </dependency>
+        <!-- Gatling dependencies -->
         <dependency>
             <groupId>io.gatling.highcharts</groupId>
             <artifactId>gatling-charts-highcharts</artifactId>
-            <version>3.9.5</version>
+            <version>${gatling.version}</version>
         </dependency>
         <dependency>
             <groupId>io.gatling</groupId>
             <artifactId>gatling-app</artifactId>
-            <version>3.9.5</version>
+            <version>${gatling.version}</version>
         </dependency>
         <dependency>
             <groupId>io.gatling</groupId>
             <artifactId>gatling-test-framework</artifactId>
-            <version>3.9.5</version>
+            <version>${gatling.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.gatling</groupId>
             <artifactId>gatling-core</artifactId>
-            <version>3.9.5</version>
+            <version>${gatling.version}</version>
         </dependency>
         <dependency>
             <groupId>io.gatling</groupId>
             <artifactId>gatling-http</artifactId>
-            <version>3.9.1</version>
+            <version>${gatling.version}</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>ca.etsmtl.taf.performance.gatling.Main</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- <plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>4.6.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <simulationClass>ca.etsmtl.simulation.LoadTestSimulation</simulationClass>
-                </configuration>
-            </plugin> -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
