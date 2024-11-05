@@ -1,6 +1,6 @@
-package ca.etsmtl.simulation;
+package ca.etsmtl.taf.performance.gatling.simulation;
 
-import ca.etsmtl.entity.GatlingRequest;
+import ca.etsmtl.taf.performance.gatling.entity.GatlingRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.core.Simulation;

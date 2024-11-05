@@ -12,37 +12,41 @@ L'interface est une application web utilisant le framework Angular.
 
 ## Builder et lancer le projet
 
-Pour lancer le projet, la méthode la plus simple est d'utiliser
+### Localement :
+
+Il est possible de lancer les applications côté serveur et côté client séparément. Cela est recommandé malgré sa complexité, étant donné qu'ils sont plus facile à débugger de cette manière et que Docker n'est présentement pas fonctionnel.
+
+#### Backend
+
+**Prérequis**
+1. Installer Maven
+2. Installer Jmeter
+3. Installer l'extension `Spring Boot Dashboard`avec VSCode
+
+**Pour tester localement**
+1. Naviguer à la racine du projet et ouvrir le fichier `.env` sous la racine du projet et changer la valeur de la variable `JMETER_INSTALL_DIR` pour le chemin où jmeter a été installé. Par exemple: `JMETER_INSTALL_DIR=/Users/jean-francoisl/Downloads/apache-jmeter-5.6.3`
+
+2. Exécuter la commande `mvn clean install`
+
+3. Lancer le module `taf-backend` à travers l'extension VSCode `Spring Boot Dashboard` (vscjava.vscode-spring-boot-dashboard)
+La variable d'environnement devrait être chargée.
+
+#### Frontend
+- Naviguer dans l;e répertoire `cd /frontend`
+- Installez des dépendances avec `npm install`.
+- Lancez l'application avec la ligne de commande `npm start`.
+
+L'application devrait être accessible sur http://localhost:4200
 
 ### Avec docker :
 
+***NON FONCTIONNEL***
 - (Prérequis) Installez Docker ainsi que Docker Compose sur votre système
 - Exécutez la commande suivante :
 ```bash
 docker compose --env-file .docker_config.env up
 ```
-
-### Sans docker :
-
-Il est aussi possible de lancer les applications côté serveur et côté client séparément. Cela n'est cependant pas recommandé, car cela est plus complexe, et le deviendra de plus en plus à mesure que de nouveaux services seront ajouté.
-
-#### Backend
-
-**Prérequis**
-1. Installer Jmeter
-   Faire un download du ZIP ou TGZ et l'extraire dans n'importe quel dossier
-2. Installer Maven
-
-**Pour tester localement**
-1. Ouvrir le fichier `.env` sous la racine du projet et changer la valeur de la variable `JMETER_INSTALL_DIR` pour le chemin où jmeter a été installé. Par exemple: `JMETER_INSTALL_DIR=/Users/jean-francoisl/Downloads/apache-jmeter-5.6.3`
-
-2. Lancer l'application SpringBoot en utilisant la vue Web VSCode `Sprint Boot Dashboard`
-La variable d'environnement devrait être loader.
-
-#### Frontend
-- Installez des dépendances avec `npm install`.
-- Lancez l'application avec la ligne de commande
-`npm start`.
+***NON FONCTIONNEL***
 
 **Autres services :**  
 Pour les autres services, vous pouvez vous référer au Wiki ou contacter les équipes directement.
