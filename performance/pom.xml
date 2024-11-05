@@ -17,6 +17,7 @@
 
     <modules>
         <module>jmeter</module>
+        <module>gatling</module>
     </modules>
 
 </project>

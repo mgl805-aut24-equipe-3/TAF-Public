@@ -186,7 +186,7 @@ describe('PerformanceTestApiService', () => {
       expect(response).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/api/gatling/runSimulation`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/api/performance/gatling/runSimulation`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
     req.flush(mockResponse);
@@ -257,7 +257,7 @@ describe('PerformanceTestApiService', () => {
 # Explications
 
 ## Test de la méthode `sendGatlingRequest`
-- **Requête POST** : Vérifie que la méthode `sendGatlingRequest` envoie une requête POST à l'URL correcte (`${environment.apiUrl}/api/gatling/runSimulation`) avec les bonnes données (`request`).
+- **Requête POST** : Vérifie que la méthode `sendGatlingRequest` envoie une requête POST à l'URL correcte (`${environment.apiUrl}/api/performance/gatling/runSimulation`) avec les bonnes données (`request`).
 - **Observable** : Vérifie que la méthode `sendGatlingRequest` retourne une Observable avec les données de réponse (`{ success: true }`).
 
 ## Test de la méthode `sendHttpJMeterRequest`

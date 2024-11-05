@@ -7,8 +7,8 @@ import { JMeterFTPRequest } from '../performance-test-api/jmeter-api/jmeter-ftp-
 
 import { GatlingRequest } from '../performance-test-api/gatling-api/gatling-request';
 
-const GATLING_API = `${environment.apiUrl}/api/gatling/runSimulation`;
-const LATEST_REPORT_API = `${environment.apiUrl}/api/gatling/latest-report`;
+const GATLING_API = `${environment.apiUrl}/api/performance/gatling/runSimulation`;
+const LATEST_REPORT_API = `${environment.apiUrl}/api/performance/gatling/latest-report`;
 const JMeter_HttpRequest_API = `${environment.apiUrl}/api/performance/jmeter/http`;
 const JMeter_FtpRequest_API = `${environment.apiUrl}/api/performance/jmeter/ftp`;
 

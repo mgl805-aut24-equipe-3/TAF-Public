@@ -1,4 +1,4 @@
-package ca.etsmtl.taf.config;
+package ca.etsmtl.taf.performance.gatling.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

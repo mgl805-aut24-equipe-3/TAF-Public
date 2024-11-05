@@ -57,7 +57,7 @@ describe('PerformanceTestApiService', () => {
       expect(response).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/api/gatling/runSimulation`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/api/performance/gatling/runSimulation`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
     req.flush(mockResponse);
