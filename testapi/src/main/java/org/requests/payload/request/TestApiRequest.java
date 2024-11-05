@@ -9,6 +9,10 @@ import java.util.Map;
 public class TestApiRequest {
     private Method method;
 
+    private String authorization;
+
+    private String bearerToken;
+
     @NotBlank
     private String apiUrl;
 
@@ -26,6 +30,12 @@ public class TestApiRequest {
 
     public Method getMethod() { return this.method; }
     public void setMethod(String method) { this.method = Method.valueOf(method.toUpperCase()); }
+
+    public String getAuthorization() { return this.authorization; }
+    public void setAuthorization(String authorization) { this.authorization = authorization; }
+
+    public String getBearerToken() { return this.bearerToken; }
+    public void setBearerToken(String bearerToken) { this.bearerToken = bearerToken; }
 
     public String getApiUrl() { return this.apiUrl; }
     public void setApiUrl(String apiUrl) { this.apiUrl = apiUrl; }
@@ -45,7 +55,7 @@ public class TestApiRequest {
     }
 
     public int getResponseTime() {
-        return responseTime;
+        return this.responseTime;
     }
 
     public void setResponseTime(int responseTime) {
@@ -53,7 +63,7 @@ public class TestApiRequest {
     }
 
     public Map<String, String> getExpectedHeaders() {
-        return expectedHeaders;
+        return this.expectedHeaders;
     }
 
     public void setExpectedHeaders(Map<String, String> expectedHeaders) {
@@ -61,7 +71,11 @@ public class TestApiRequest {
     }
 
     public Map<String, String> getHeaders() {
-        return headers;
+        if ("bearer_token".equals(getAuthorization())) {
+            this.headers.put("Authorization", getBearerToken());
+        }
+        System.out.println(" ---------------- finalll Headers"+ this.headers.toString());
+        return this.headers;
     }
 
     public void setHeaders(Map<String, String> headers) {

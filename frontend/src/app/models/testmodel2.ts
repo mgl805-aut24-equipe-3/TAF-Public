@@ -9,6 +9,6 @@ export interface testModel2 {
     statusCode?: number;
     responseStatus?: boolean;
     expectedHeaders:  { [key: string]: string };
-
-
+    authorization: string;
+    bearerToken?: string;
 }

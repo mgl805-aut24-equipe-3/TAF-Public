@@ -7,7 +7,7 @@ services:
       context: ./
       dockerfile: ./backend/Dockerfile
     ports:
-      - "8080:8080"
+      - "8083:8083"
     env_file:
       # Specifying the env file with necessaries values
       - .docker_config.env
@@ -21,12 +21,22 @@ services:
       - "4200:80"
     depends_on:
       - backend
-  
-  selenium:
-    image: selenium
-    container_name: selenium
+
+  testapi:
+    image: testapi
+    container_name: testapi
     build:
-      context: ./
-      dockerfile: ./selenium/Dockerfile
+      context: ./testapi
+      dockerfile: ./Dockerfile
     ports:
-      - "8090:8090"
+      - "8082:8082"
+    
+  
+  # selenium:
+  #   image: selenium
+  #   container_name: selenium
+  #   build:
+  #     context: ./
+  #     dockerfile: ./selenium/Dockerfile
+  #   ports:
+  #     - "8090:8090"

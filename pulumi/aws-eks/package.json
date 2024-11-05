@@ -11,6 +11,7 @@
     "@pulumi/eks": "^0.42.5",
     "@pulumi/kubernetes": "^3.22.1",
     "@pulumi/pulumi": "^3.43.1",
+    "aws-eks": "file:",
     "js-yaml": "^4.1.0",
     "typescript": "^4.8.4"
   }

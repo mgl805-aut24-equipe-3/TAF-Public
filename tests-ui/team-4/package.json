@@ -22,5 +22,8 @@
   "homepage": "https://github.com/AlphaBryan/ProjetMGL805#readme",
   "devDependencies": {
     "concurrently": "^7.5.0"
+  },
+  "dependencies": {
+    "application": "file:"
   }
 }

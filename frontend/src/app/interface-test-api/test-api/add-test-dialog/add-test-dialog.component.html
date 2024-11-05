@@ -20,6 +20,23 @@
         <input matInput [(ngModel)]="apiUrl" name="apiUrl" required />
       </mat-form-field>
 
+      <!-- Champ pour specifier l'autorisation type -->
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>Authorization</mat-label>
+        <mat-select [(ngModel)]="authorization" name="authorization" required>
+          <mat-option value="no_auth">No Auth</mat-option>
+          <mat-option value="api_key">API Key</mat-option>
+          <mat-option value="bearer_token">Bearer Token</mat-option>
+          <mat-option value="jwt_bearer">JWT Bearer</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Champ pour specifier l'autorisation type -->
+      <mat-form-field appearance="outline" class="example-full-width" *ngIf="authorization === 'bearer_token'">
+        <mat-label>Bearer Token</mat-label>
+        <input matInput type="text" [(ngModel)]="bearerToken" [formControl]="bearer_token_control" placeholder="Tap your Bearer Token here..." required>
+      </mat-form-field>
+
 
       <!-- Boucle pour les en-têtes -->
       <p > liste des Headers </p>
