@@ -35,7 +35,7 @@ public class GatlingConfigurator implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        String resourceLocation = GATLING_RESULTS_FOLDER.toPath().toUri().toString()  + "/";  
+        String resourceLocation = GATLING_RESULTS_FOLDER.toPath().toUri().toString(); // ToUri() puts trailing slash  
         logger.info("Configuration du gestionnaire de ressources pour: {}", resourceLocation); //Pour les logs
         
         registry.addResourceHandler("/reports/performance/gatling/dashboard/**")
