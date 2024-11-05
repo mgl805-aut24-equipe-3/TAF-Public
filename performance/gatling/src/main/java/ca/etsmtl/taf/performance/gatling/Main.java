@@ -1,6 +1,6 @@
-package ca.etsmtl;
+package ca.etsmtl.taf.performance.gatling;
 
-import ca.etsmtl.simulation.LoadTestSimulation;
+import ca.etsmtl.taf.performance.gatling.simulation.LoadTestSimulation;
 import io.gatling.app.Gatling;
 import io.gatling.core.config.GatlingPropertiesBuilder;
 
