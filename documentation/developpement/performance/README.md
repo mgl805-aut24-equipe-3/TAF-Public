@@ -7,7 +7,7 @@ Après analyse et discussion entre tous les membres de l'équipe, nous avons env
 - Le module **backend centralise les dépendances** afin d'offrir l'accès au différents outils de test de performance
 - De nouveaux modules ou outils de performance peuvent être ajoutés facilement par la suite.
 Voici le diagramme de l'architecture envisagée:
-![Diagramme de composants - architecture telle quelle](./architecture/Envisagee.drawio.svg)
+![Diagramme de composants - architecture telle quelle](../architecture/Envisagee.drawio.svg)
 
 ## Conseils pour la gestion du projet
 Afin de mieux gérer le projet et collaborer efficacement entre les équipiers, nous avons utilisé les 
@@ -17,7 +17,7 @@ Afin de mieux gérer le projet et collaborer efficacement entre les équipiers, 
 1. **Tâche de programmation collaborative**  
    Afin de s'assurer de la qualité de notre code à livrer à l'équipe, nous avons décidé de créer un fork pour toute notre équipe à partir duquel chaque équipier à créer un fork.
    Ainsi, chacun doit créer un Pull Request vers le fork de l'équipe pour que le code soit vérifier avant la fusion dans la branche `develop`. Pour mieux comprendre la configuration, voici un diagramme ci dessous. De plus, Github a été intégré à une chaîne Discord pour s'assurer une réaction rapide des membres de l'équipe.
-   ![code collaboratif](./architecture/Code%20collaboratif.drawio.svg)
+   ![code collaboratif](../architecture/Code%20collaboratif.drawio.svg)
 3. **Harmonisation des environnements de développement**  
    L'équipe utilise VSCode qui a la possibilité de recommender quelles extensions devraient installer pour faciliter le travail de développement. Par exemple, l'extension Spring Boot Dashboard permet de démarrer ou déboguer l'application backend avec facilité.
 4. **Clean-as-you-code**  
