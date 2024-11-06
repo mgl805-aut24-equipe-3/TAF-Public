@@ -16,6 +16,11 @@ import { environment } from 'src/environments/environment';
   ],
 })
 export class JmeterApiComponent implements OnInit {
+  isHttpSidebarVisible: boolean = false;
+  isFtpSidebarVisible: boolean = false;
+  showHttpButton: boolean = true;
+  showFtpButton: boolean = true;
+
   modal: HTMLElement | null = document.getElementById('myModal');
   span: Element | null = document.getElementsByClassName('close')[0];
   testResult: any;
@@ -56,8 +61,98 @@ export class JmeterApiComponent implements OnInit {
     this.switchCheckbox = document.getElementById(
       'formSwitch'
     ) as HTMLInputElement;
+
+    this.updateButtonVisibility();
   }
 
+  toggleHttpSidebar() {
+    this.isHttpSidebarVisible = !this.isHttpSidebarVisible;
+    this.adjustFormMargin();
+  }
+
+  toggleFtpSidebar() {
+    this.isFtpSidebarVisible = !this.isFtpSidebarVisible;
+    this.adjustFormMargin();
+  }
+
+  adjustFormMargin() {
+    const mainContent = document.querySelector('.main') as HTMLElement;
+    const headerContainer = document.querySelector('.header-container') as HTMLElement;
+
+    if (mainContent && headerContainer) {
+      if (this.isHttpSidebarVisible || this.isFtpSidebarVisible) {
+        mainContent.style.marginLeft = '500px';
+        headerContainer.style.marginLeft = '500px';
+      } else {
+        mainContent.style.marginLeft = '0';
+        headerContainer.style.marginLeft = '0';
+      }
+    }
+
+    // if (mainContent && headerContainer) {
+    //   if (this.isHttpSidebarVisible) {
+    //     mainContent.style.marginLeft = '500px';
+    //     headerContainer.style.marginLeft = '500px';
+    //   } else if (this.isFtpSidebarVisible) {
+    //     mainContent.style.marginLeft = '500px';
+    //     headerContainer.style.marginLeft = '500px';
+    //   } else {
+    //     mainContent.style.marginLeft = '0';
+    //     headerContainer.style.marginLeft = '0';
+    //   }
+    // }
+  }
+
+  resetForms() {
+    const httpForm = document.getElementById('http-form') as HTMLFormElement;
+    const ftpForm = document.getElementById('ftp-form') as HTMLFormElement;
+
+    if (httpForm) {
+      httpForm.reset();
+    }
+    if (ftpForm) {
+      ftpForm.reset();
+    }
+  }
+
+  updateButtonVisibility() {
+    if (this.switchCheckbox?.checked) {
+      this.showHttpButton = false;
+      this.showFtpButton = true;
+    } else {
+      this.showHttpButton = true;
+      this.showFtpButton = false;
+    }
+  }
+
+  toggleForms() {
+    this.isHttpSidebarVisible = false;
+    this.isFtpSidebarVisible = false;
+    this.adjustFormMargin();
+
+    const httpForm = document.getElementById('http-form') as HTMLFormElement;
+    const ftpForm = document.getElementById('ftp-form') as HTMLFormElement;
+    const switchLabel = document.getElementById('switchLabel') as HTMLElement;
+
+    if (this.switchCheckbox?.checked) {
+      // Show FTP form
+      httpForm.style.display = 'none';
+      ftpForm.style.display = 'block';
+      this.showHttpButton = false;
+      this.showFtpButton = true;
+      switchLabel.innerText = 'FTP';
+    } else {
+      // Show HTTP form
+      httpForm.style.display = 'block';
+      ftpForm.style.display = 'none';
+      this.showHttpButton = true;
+      this.showFtpButton = false;
+      switchLabel.innerText = 'HTTP';
+    }
+
+    this.resetForms();
+    this.updateButtonVisibility();
+  }
   validateHttpForm(): boolean {
     let isValid = true;
     const requiredFields = [
@@ -65,7 +160,10 @@ export class JmeterApiComponent implements OnInit {
       { element: 'nbThreads', errorMessage: 'Veuillez entrer une valeur' },
       { element: 'domain', errorMessage: 'Veuillez entrer une valeur' },
       { element: 'path', errorMessage: 'Veuillez entrer une valeur' },
-      { element: 'methodType', errorMessage: 'Veuillez sélectionner un type de requête' }
+      { element: 'methodType', errorMessage: 'Veuillez sélectionner un type de requête' },
+      // { element: 'duration', errorMessage: 'Veuillez entrer une durée' }, // lors d'un nouveau teste il est requis
+      // { element: 'rampTime', errorMessage: 'Veuillez entrer une temps de montée' }, // lors d'un nouveau teste il est requis
+      { element: 'protocol', errorMessage: 'Veuillez entrer un protocole' } // lors d'un nouveau teste il est requis
     ];
 
     requiredFields.forEach(field => {
@@ -209,38 +307,6 @@ export class JmeterApiComponent implements OnInit {
   closeModalOnOutsideClick(event: MouseEvent) {
     if ((event.target as HTMLElement).id === 'detailModal') {
       this.closeTestDetails();
-    }
-  }
-
-  toggleForms() {
-    if (
-      this.switchCheckbox?.checked &&
-      this.httpForm &&
-      this.ftpForm &&
-      this.switchLabel &&
-      this.ftp_description &&
-      this.http_description
-    ) {
-      // Show FTP form
-      this.httpForm.style.display = 'none';
-      this.ftpForm.style.display = 'block';
-      this.ftp_description.style.display = 'block';
-      this.http_description.style.display = 'none';
-      this.switchLabel.innerText = 'FTP';
-    } else if (
-      !this.switchCheckbox?.checked &&
-      this.httpForm &&
-      this.ftpForm &&
-      this.switchLabel &&
-      this.ftp_description &&
-      this.http_description
-    ) {
-      // Show HTTP form
-      this.httpForm.style.display = 'block';
-      this.ftpForm.style.display = 'none';
-      this.ftp_description.style.display = 'none';
-      this.http_description.style.display = 'block';
-      this.switchLabel.innerText = 'HTTP';
     }
   }
 
