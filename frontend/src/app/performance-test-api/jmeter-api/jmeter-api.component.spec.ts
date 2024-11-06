@@ -15,7 +15,7 @@ describe('JmeterApiComponent', () => {
   /**
    * Configuration du module de test avant chaque test.
    * Cette méthode est exécutée une seule fois avant tous les tests.
-   * Elle configure  le module de test avec les déclarations et les fournisseurs nécessaires.
+   * Elle configure le module de test avec les déclarations et les fournisseurs nécessaires.
    */
   beforeEach(async () => {
     const spy = jasmine.createSpyObj('PerformanceTestApiService', ['sendHttpJMeterRequest', 'sendFtpJMeterRequest']);
