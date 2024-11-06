@@ -6,4 +6,4 @@ Temporairement, la documentation est disponible dans ce dépôt (branche `develo
 ## Documentation utilisateur
 Vous trouverez la documentation utilisateur [en cliquant ici](./utilisateur/README.md).
 ## Documentation développeur
-Vous trouverez la documentation utilisateur [en cliquant ici](./development/README.md).
+Vous trouverez la documentation utilisateur [en cliquant ici](./developpement/README.md).
