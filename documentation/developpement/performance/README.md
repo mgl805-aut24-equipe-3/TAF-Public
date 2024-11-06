@@ -10,7 +10,7 @@ Voici le diagramme de l'architecture envisagée:
 ![Diagramme de composants - architecture telle quelle](../architecture/Envisagee.drawio.svg)
 
 ## Conseils pour la gestion du projet
-Afin de mieux gérer le projet et collaborer efficacement entre les équipiers, nous avons utilisé les 
+Afin de mieux gérer le projet et collaborer efficacement entre les équipiers, nous avons utilisé [un projet dans Github](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects) avec une vue Kanban des tâches à compléter.
 
 # Assurance Qualité
 ## Processus mis en place
