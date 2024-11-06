@@ -88,19 +88,6 @@ export class JmeterApiComponent implements OnInit {
         headerContainer.style.marginLeft = '0';
       }
     }
-
-    // if (mainContent && headerContainer) {
-    //   if (this.isHttpSidebarVisible) {
-    //     mainContent.style.marginLeft = '500px';
-    //     headerContainer.style.marginLeft = '500px';
-    //   } else if (this.isFtpSidebarVisible) {
-    //     mainContent.style.marginLeft = '500px';
-    //     headerContainer.style.marginLeft = '500px';
-    //   } else {
-    //     mainContent.style.marginLeft = '0';
-    //     headerContainer.style.marginLeft = '0';
-    //   }
-    // }
   }
 
   resetForms() {
