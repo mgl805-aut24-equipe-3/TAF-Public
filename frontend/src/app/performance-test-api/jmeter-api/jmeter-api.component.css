@@ -176,7 +176,6 @@ input:checked + .slider:before {
   top: auto; /* Adjust this value to position the HTTP sidebar */
   left: 0px; /* Adjust this value to position the HTTP sidebar */
   position: absolute; /* Fix the position of the sidebar */
-  /* border: 1px solid #ccc; */
 }
 
 .ftp-sidebar {
