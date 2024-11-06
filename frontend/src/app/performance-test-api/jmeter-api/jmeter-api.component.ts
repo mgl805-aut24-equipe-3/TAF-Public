@@ -161,7 +161,7 @@ export class JmeterApiComponent implements OnInit {
       { element: 'domain', errorMessage: 'Veuillez entrer une valeur' },
       { element: 'path', errorMessage: 'Veuillez entrer une valeur' },
       { element: 'methodType', errorMessage: 'Veuillez sélectionner un type de requête' },
-      // { element: 'duration', errorMessage: 'Veuillez entrer une durée' }, // lors d'un nouveau teste il est requis
+      // { element: 'duration', errorMessage: 'Veuillez entrer une durée' }, // si lors d'un nouveau teste il est requis
       // { element: 'rampTime', errorMessage: 'Veuillez entrer une temps de montée' }, // lors d'un nouveau teste il est requis
       { element: 'protocol', errorMessage: 'Veuillez entrer un protocole' } // lors d'un nouveau teste il est requis
     ];
