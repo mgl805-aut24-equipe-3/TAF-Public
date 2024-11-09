@@ -47,3 +47,7 @@ results/
 # local config
 application-local.yml
 node_modules
+
+# Other temp files
+.DS_Store
+*.bkp

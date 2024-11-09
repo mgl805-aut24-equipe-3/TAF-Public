@@ -1,0 +1,26 @@
+meta {
+  name: JMeter-TestPlan-HTTP
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/api/performance/jmeter/http
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nbThreads": "10",
+    "rampTime": "5",
+    "duration": "",
+    "domain": "httpbin.org",
+    "port": "",
+    "protocol": "https",
+    "path": "/get",
+    "method": "GET",
+    "loop": "3",
+    "data": ""
+  }
+}

@@ -1,0 +1,26 @@
+meta {
+  name: JMeter-Dashboard-HTTP
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{url}}/api/performance/jmeter/dashboard/results/dashboard_20241029_153537/index.html
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nbThreads": "10",
+    "rampTime": "5",
+    "duration": "",
+    "domain": "httpbin.org",
+    "port": "",
+    "protocol": "https",
+    "path": "/get",
+    "method": "GET",
+    "loop": "3",
+    "data": ""
+  }
+}
