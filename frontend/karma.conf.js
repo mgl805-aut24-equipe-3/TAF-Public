@@ -2,9 +2,15 @@
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
 module.exports = function (config) {
+  // Check if the CI environment variable is set (GitHub Actions and most CI tools set this automatically)
+  const isCI = process.env.CI;
+
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    files: [
+      'src/**/*.spec.js', // Include all test files in the src directory
+    ],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
@@ -30,15 +36,24 @@ module.exports = function (config) {
       reporters: [
         { type: 'html' },
         { type: 'text-summary' }
-      ]
+      ],
+      check: { //The check property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
+        global: {
+          statements: 30,
+          branches: 30,
+          functions: 30,
+          lines: 30,
+          includes: ['src/**/performance-test-api/**/*.ts'], 
+        },
+      }
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
-    singleRun: false,
+    browsers: [isCI ? 'ChromeHeadless': 'Chrome'],
+    singleRun: isCI, // On CI, ensure the runner exits in CI after tests complete
     restartOnFileChange: true
   });
 };

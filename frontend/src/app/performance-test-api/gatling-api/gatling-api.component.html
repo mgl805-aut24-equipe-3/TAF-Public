@@ -3,62 +3,69 @@
     <div class="modal-content">
       <div class="modal-header">
         <span class="close" (click)="closeModal()">&times;</span>
-        <h2>Résultat de test(notez qu'à la fin, il y a le lien vers de rapport de test)</h2>
+        <h2>Résultat de test</h2>
       </div>
-      <div class="modal-body">
-        <p *ngFor="let value of testResult">{{value}}</p>
+      <div class="modal-body" >
+        <span *ngIf="testResult && testResult.length > 0" class="result-icon success">&#10004;</span>
+        <p *ngIf="testResult && testResult.length > 0">Le rapport a été généré avec succès.</p>
+        <button mat-raised-button class="showbutton" color="primary" (click)="showLatestReport()" >Afficher le rapport</button>
       </div>
       <div class="modal-footer">
-        <button mat-raised-button  color="primary" (click)="closeModal()">Fermer</button>
+        <button mat-raised-button class="newtestbutton" color="accent" (click)="newTest()">Nouveau Test</button>
+        <button mat-raised-button class="closebutton" color="primary" (click)="closeModal()">Fermer</button>
       </div>
     </div>
   </div>
 
-  <div class="sidebar">
-    <div class="sidebar-content">
-      <div class="sidebar-title"><h1>Gatling</h1></div>
-      <div class="description"><p>
-        Gatling est un outil de test de performance open-source qui évalue la réactivité des applications web et des API. Pour lancer un test avec Gatling, vous avez besoin de définir la configuration de l'application à tester.
-        <br><br><b>Url :</b> L'URL de base de l'application à tester, pour indiquer l'emplacement précis de l'application ou de l'API à tester.
-
-        <br><br><b>Paramètres de requête :</b> Les paramètres que l'on inclut dans une URL pour transmettre des données.
-
-        <br><br><b>Type de requête :</b> Le type de requête que vous souhaitez tester,  définit le comportement de l'utilisateur virtuel dans le scénario de test.
-
-        <br><br><b>Nombre d'utilisateurs :</b> Le nombre d'utilisateurs simultanés, pour simuler des charges réalistes et évaluer les performances de l'application sous différents niveaux de trafic.
-
-
-      </p></div>
-    </div>
-  </div>
   <div class="main">
     <div class="content">
       <form (ngSubmit)="onSubmit()">
         <div class="form-title">
-          <h1>Configuration du test</h1>
+          <!-- <h1>Configuration de test</h1> -->
+          <img src="assets/logo/Gatling-logo-RVB.png" alt="Gatling Logo" class="gatling-logo" matTooltip="Gatling est un outil de test de performance open-source qui évalue la réactivité des applications web et des API. Pour lancer un test avec Gatling, vous avez besoin de définir la configuration de l'application à tester.">
         </div>
+
         <div class="row">
-          <div class="form-group scenario">
-            <label for="baseUrl">Nom de scénario</label>
-            <input type="text" class="form-control" value="" id="scenarioName" [(ngModel)]="request.testScenarioName" name="testScenarioName" placeholder="Exemple">
+          <div class="form-group col">
+            <label for="scenarioName"><b>Nom de scénario <span class="required-star">*</span></b></label>
+            <span mat-icon-button matTooltip="Nom unique pour identifier le scénario de test.">
+              <mat-icon>info</mat-icon>
+            </span>
+            <input type="text" class="form-control" id="scenarioName" [(ngModel)]="request.testScenarioName" name="testScenarioName" placeholder="Exemple">
           </div>
-          <div class="form-group requestName">
-            <label for="baseUrl">Nom de la requête</label>
-            <input type="text" class="form-control" value="" id="requestName" [(ngModel)]="request.testRequestName" name="testRequestName" placeholder="Exemple">
+          <div class="form-group col">
+            <label for="requestName"><b>Nom de la requête</b></label>
+            <span mat-icon-button matTooltip="Nom unique pour identifier la requête de test.">
+              <mat-icon>info</mat-icon>
+            </span>
+            <input type="text" class="form-control" id="requestName" [(ngModel)]="request.testRequestName" name="testRequestName" placeholder="Exemple">
           </div>
         </div>
-        <div class="form-group BaseUrl">
-          <label for="baseUrl">Url de base</label>
-          <input type="text" class="form-control" value="" id="baseUrl" [(ngModel)]="request.testBaseUrl" name="testBaseUrl" placeholder="https://exemple.api.domain">
-        </div>
-        <div class="form-group">
-          <label for="params">Paramètres de requête</label>
-          <input type="text" class="form-control" value="" id="params" [(ngModel)]="request.testUri" name="testUri" placeholder="/params?param=exemple&page=1">
-        </div>
+
         <div class="row">
-          <div class="form-group typeRequete">
-            <label for="typeRequete">Type de requête</label>
-            <select class="form-control" id="typeRequete" [(ngModel)]="request.testMethodType" name="testMethodType" aria-placeholder="GET, POST...">
+          <div class="form-group col">
+            <label for="baseUrl"><b>Url de base <span class="required-star">*</span></b></label>
+            <span mat-icon-button matTooltip="L'URL de base de l'application à tester, pour indiquer l'emplacement précis de l'application ou de l'API à tester.">
+              <mat-icon>info</mat-icon>
+            </span>
+            <input type="text" class="form-control" id="baseUrl" [(ngModel)]="request.testBaseUrl" name="testBaseUrl" placeholder="https://exemple.api.domain">
+          </div>
+          <div class="form-group col">
+            <label for="params"><b>Paramètres de requête <span class="required-star">*</span></b></label>
+            <span mat-icon-button matTooltip="Les paramètres que l'on inclut dans une URL pour transmettre des données.">
+              <mat-icon>info</mat-icon>
+            </span>
+            <input type="text" class="form-control" id="params" [(ngModel)]="request.testUri" name="testUri" placeholder="/params?param=exemple&page=1">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col">
+            <label for="typeRequete"><b>Type de requête <span class="required-star">*</span></b></label>
+            <span mat-icon-button matTooltip="Le type de requête (GET, POST, etc.) que vous souhaitez tester,  définit le comportement de l'utilisateur virtuel dans le scénario de test.">
+              <mat-icon>info</mat-icon>
+            </span>
+            <select class="form-control" id="typeRequete" [(ngModel)]="request.testMethodType" name="testMethodType">
               <option disabled selected value="">GET, POST...</option>
               <option>GET</option>
               <option>POST</option>
@@ -67,19 +74,27 @@
               <option>PATCH</option>
             </select>
           </div>
-          <div class="form-group nbrUsers">
-            <label for="exampleFormControlTextarea1">Nombre d'utilisateurs</label>
-            <input type="number" class="form-control" [(ngModel)]="request.testUsersNumber" name="userNumber" id="exampleFormControlTextarea1" rows="3">
+          <div class="form-group col">
+            <label for="nbrUsers"><b>Nombre d'utilisateurs <span class="required-star">*</span></b></label>
+            <span mat-icon-button matTooltip="Le nombre d'utilisateurs simultanés, pour simuler des charges réalistes et évaluer les performances de l'application sous différents niveaux de trafic.">
+              <mat-icon>info</mat-icon>
+            </span>
+            <input type="number" class="form-control" id="nbrUsers" [(ngModel)]="request.testUsersNumber" name="userNumber">
           </div>
         </div>
 
         <div class="form-group">
-          <label for="exampleFormControlTextarea1">Corps de la requête</label>
-          <textarea  class="form-control" [(ngModel)]="request.testRequestBody" name="requestBody" id="exampleFormControlTextarea1" rows="3"> </textarea>
+          <label for="requestBody"><b>Corps de la requête</b></label>
+          <span mat-icon-button matTooltip="Le corps de la requête HTTP.">
+            <mat-icon>info</mat-icon>
+          </span>
+          <textarea class="form-control" id="requestBody" [(ngModel)]="request.testRequestBody" name="requestBody" rows="5"></textarea>
         </div>
 
         <div class="row button-row">
-          <button mat-raised-button class="test-button" color="primary" (click)="onSubmit()">Tester</button>
+          <div class="col-12 text-center">
+            <button mat-raised-button class="test-button" color="primary" type="submit">Tester</button>
+          </div>
         </div>
         <div [ngBusy]="busy"></div>
       </form>
